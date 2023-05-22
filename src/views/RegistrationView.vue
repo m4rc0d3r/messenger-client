@@ -25,14 +25,13 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth-store";
-import type { TUserRegisterDTO } from "@/schemas/user";
-import { APIError } from "@/schemas/api-error.js";
+import type { TUserToRegister } from "@/schemas/user";
 
 const router = useRouter();
 const authStore = useAuthStore();
 
 const form = ref<HTMLFormElement>();
-const user = ref<TUserRegisterDTO>({
+const user = ref<TUserToRegister>({
   nickname: "",
   email: "",
   password: "",
@@ -40,14 +39,14 @@ const user = ref<TUserRegisterDTO>({
 const error = ref("");
 
 async function register() {
-  if (form.value?.checkValidity()) {
-    const result = await authStore.register(user.value);
-    if (result instanceof Error) {
-      error.value = result.message;
-    } else {
-      router.push("/");
-    }
+  // if (form.value?.checkValidity()) {
+  const result = await authStore.register(user.value);
+  if (result instanceof Error) {
+    error.value = result.message;
+  } else {
+    router.push("/");
   }
+  // }
 }
 </script>
 

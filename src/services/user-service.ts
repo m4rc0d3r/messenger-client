@@ -3,17 +3,18 @@ import { AxiosError, type AxiosResponse } from "axios";
 import { HTTP_SERVER_URL } from "@/env";
 import type {
   TRegistrationAndLoginResponse,
+  TUser,
+  TUserFromServer,
   TUserToLogin,
   TUserToRegister,
 } from "@/schemas/user";
 import { APIError } from "@/schemas/api-error";
 
-export class AuthService {
-  public static async register(user: TUserToRegister) {
+export class UserService {
+  public static async getUserById(id: TUser["id"]) {
     try {
-      const response = await axios.post<TRegistrationAndLoginResponse>(
-        `${HTTP_SERVER_URL}users/register`,
-        user,
+      const response = await axios.get<TUserFromServer>(
+        `${HTTP_SERVER_URL}users/getuserbyid?id=${id}`,
       );
 
       return response.data;

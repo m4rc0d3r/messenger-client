@@ -23,27 +23,27 @@
 import { ref } from "vue";
 import { useRouter, RouterLink } from "vue-router";
 import { useAuthStore } from "@/stores/auth-store";
-import type { TUserLoginDTO } from "@/schemas/user";
+import type { TUserToLogin } from "@/schemas/user";
 
 const router = useRouter();
 const authStore = useAuthStore();
 
 const form = ref<HTMLFormElement>();
-const user = ref<TUserLoginDTO>({
+const user = ref<TUserToLogin>({
   email: "",
   password: "",
 });
 const error = ref("");
 
 async function login() {
-  if (form.value?.checkValidity()) {
-    const result = await authStore.login(user.value);
-    if (result instanceof Error) {
-      error.value = result.message;
-    } else {
-      router.push("/");
-    }
+  // if (form.value?.checkValidity()) {
+  const result = await authStore.login(user.value);
+  if (result instanceof Error) {
+    error.value = result.message;
+  } else {
+    router.push("/");
   }
+  // }
 }
 </script>
 
