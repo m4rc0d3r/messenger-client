@@ -36,10 +36,11 @@ const sender = ref<TUser>();
 
 onMounted(async () => {
   await updateSender();
-}),
-  onUpdated(async () => {
-    await updateSender();
-  });
+});
+
+onUpdated(async () => {
+  await updateSender();
+});
 
 async function updateSender() {
   if (props.chat.messages.length > 0) {
@@ -53,9 +54,7 @@ async function updateSender() {
 <style scoped>
 .chat-card {
   list-style-type: none;
-  border: 2px solid black;
-  border-radius: 10px;
-  padding: 8px;
+  border-radius: 8px;
   max-width: 100%;
   overflow: hidden;
   display: flex;
@@ -71,6 +70,6 @@ async function updateSender() {
 }
 
 .chat-card__selected {
-  background-color: yellowgreen;
+  background-color: #369bb4;
 }
 </style>

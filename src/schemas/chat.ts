@@ -1,4 +1,5 @@
 import type { TMessage } from "./message";
+import type { TUser, TUserFromServer } from "./user";
 
 export type TChatFromServer = {
   id_chat: number;
@@ -10,7 +11,23 @@ export type TChatFromServer = {
 export type TChat = {
   id: number;
   name: string;
-  type: number;
+  type: ChatType;
   link: string;
   messages: TMessage[];
+};
+
+export enum ChatType {
+  DIALOGUE = 1,
+  POLYLOGUE,
+}
+
+export type TCreateChat = {
+  type: TChat["type"];
+  interlocutorId?: TUser["id"];
+  name?: TChat["name"];
+};
+
+export type TCreateChatToServer = Pick<TChatFromServer, "rk_type_chat"> & {
+  id_user?: TUserFromServer["id_user"];
+  name_chat?: TChatFromServer["name_chat"];
 };

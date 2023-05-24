@@ -1,16 +1,14 @@
 <template>
-  <div
-    @click="emit('close')"
-    class="modal-window-wrapper"
-  >
-    <div @click="(ev) => ev.stopPropagation()" class="modal-window">
-      <slot></slot>
+  <Teleport to="body">
+    <div @click="emit('close')" class="modal-window-wrapper">
+      <div @click="(ev) => ev.stopPropagation()" class="modal-window">
+        <slot></slot>
+      </div>
     </div>
-  </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
-
 const emit = defineEmits({
   close() {
     return true;

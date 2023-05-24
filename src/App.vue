@@ -28,9 +28,6 @@
           class="main-menu__item"
           >Login</RouterLink
         >
-        <a v-if="authStore.isLoggedIn" @click="logout" class="main-menu__item">
-          Logout
-        </a>
         <span
           v-if="authStore.isLoggedIn"
           @click="showUserProfile"
@@ -38,6 +35,9 @@
         >
           {{ authStore.currentUser.value?.nickname }}</span
         >
+        <a v-if="authStore.isLoggedIn" @click="logout" class="main-menu__item">
+          Logout
+        </a>
       </div>
     </nav>
     <RouterView />
@@ -75,12 +75,10 @@ const authStore = useAuthStore();
 const userProfileVisibility = ref(false);
 
 function showUserProfile() {
-  console.log("show");
   userProfileVisibility.value = true;
 }
 
 function hideUserProfile() {
-  console.log("hide");
   userProfileVisibility.value = false;
 }
 

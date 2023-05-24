@@ -1,10 +1,13 @@
 <template>
   <div class="layout">
-    <ChatList
-      :chats="chats"
-      :selected-chat="selectedChat"
-      @select="selectChat"
-    />
+    <div class="left-bar">
+      <FindUserInput />
+      <ChatList
+        :chats="chats"
+        :selected-chat="selectedChat"
+        @select="selectChat"
+      />
+    </div>
     <ChatArea :chat="selectedChat" @send-message="addMessageToChat" />
   </div>
 </template>
@@ -19,6 +22,7 @@ import { type TChat } from "@/schemas/chat";
 import { APIError } from "@/schemas/api-error";
 import ChatList from "@/components/ChatList.vue";
 import ChatArea from "@/components/ChatArea.vue";
+import FindUserInput from "@/components/FindUserInput.vue";
 import type { TMessage } from "@/schemas/message";
 import { webSocketConnection } from "@/http/websocket";
 import {
@@ -79,7 +83,22 @@ webSocketConnection.addEventListener("SendMessage", (e) => {
 .layout {
   display: grid;
   grid-template-columns: 1fr 3fr;
-  border: 5px solid green;
   overflow: hidden;
+  padding-bottom: 8px;
+}
+
+.left-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 8px;
+}
+
+.left-bar > * {
+  margin-top: 8px;
+}
+
+.left-bar > *:first-child {
+  margin-top: 0;
 }
 </style>

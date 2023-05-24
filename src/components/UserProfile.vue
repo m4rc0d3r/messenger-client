@@ -76,7 +76,6 @@ async function updateUser() {
 }
 
 function resetToViewMode() {
-  console.log(authStore.currentUser.value);
   mode.value = Mode.VIEW;
   userToEditAuthData.value = {
     email: authStore.currentUser.value?.email,

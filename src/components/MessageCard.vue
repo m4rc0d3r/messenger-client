@@ -36,11 +36,19 @@ onMounted(async () => {
 
 <style scoped>
 .message-card {
-  background-color: yellowgreen;
+  background-color: white;
   padding: 8px;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
+  max-width: 70%;
+  /* overflow: auto; */
+}
+
+.message-card > * {
+  /* text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap; */
 }
 
 .my-message {

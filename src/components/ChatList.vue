@@ -34,8 +34,6 @@ const emit = defineEmits({
 }
 .chat-list > * {
   margin-top: 12px;
-  margin-left: 6px;
-  margin-right: 6px;
 }
 
 .chat-list > *:first-child {

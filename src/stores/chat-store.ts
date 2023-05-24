@@ -1,7 +1,11 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { ChatService } from "@/services/chat-service";
-import { type TChat } from "@/schemas/chat";
+import {
+  type TChat,
+  type TCreateChat,
+  type TCreateChatToServer,
+} from "@/schemas/chat";
 import { MessageService } from "@/services/message-service";
 import type { TMessage } from "@/schemas/message";
 
@@ -49,5 +53,27 @@ export const useChatStore = defineStore("chat", () => {
     }
   }
 
-  return { chats, getChatsOfUser, addMessageToChat };
+  async function createChat(chat: TCreateChat) {
+    const chatToServer = {
+      rk_type_chat: chat.type,
+      id_user: chat.interlocutorId,
+      name_chat: chat.name,
+    } as TCreateChatToServer;
+
+    const result = await ChatService.createChat(chatToServer);
+    if (result instanceof Error) {
+      return result;
+    } else {
+      _chats.value.push({
+        id: result.id_chat,
+        name: result.name_chat,
+        type: result.rk_type_chat,
+        link: result.link,
+        messages: [],
+      });
+      return _chats.value[_chats.value.length - 1];
+    }
+  }
+
+  return { chats, getChatsOfUser, addMessageToChat, createChat };
 });

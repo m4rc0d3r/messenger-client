@@ -8,15 +8,20 @@
         rows="5"
         @keypress.enter="sendMessage"
       ></textarea>
-      <button @click="sendMessage" class="input-block__button">Send</button>
+      <BaseButton @click="sendMessage" class="input-block__button"
+        >Send</BaseButton
+      >
     </div>
   </div>
-  <div v-else>Select a chat to view messages</div>
+  <div class="select-chat-message" v-else>
+    <p>Select a chat to view messages</p>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { defineProps, ref, type Ref } from "vue";
 import ChatMessageList from "@/components/ChatMessageList.vue";
+import BaseButton from "@/components/BaseButton.vue";
 import type { TChat } from "@/schemas/chat";
 import type { TMessage, TMessageToSend } from "@/schemas/message";
 import { MessageService } from "@/services/message-service";
@@ -49,7 +54,7 @@ async function sendMessage() {
       );
     } else {
       messageToSend.value = "";
-      emit("send-message", props.chat.id, result);
+      // emit("send-message", props.chat.id, result);
     }
   }
 }
@@ -57,7 +62,6 @@ async function sendMessage() {
 
 <style scoped>
 .chat-area {
-  background-color: grey;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -70,5 +74,17 @@ async function sendMessage() {
 .input-block__input {
   resize: none;
   flex-grow: 1;
+  border-radius: 8px;
+  margin-right: 8px;
+}
+
+.select-chat-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.select-chat-message > * {
+  font-size: 36px;
 }
 </style>
