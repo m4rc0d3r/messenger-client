@@ -31,3 +31,13 @@ export type TCreateChatToServer = Pick<TChatFromServer, "rk_type_chat"> & {
   id_user?: TUserFromServer["id_user"];
   name_chat?: TChatFromServer["name_chat"];
 };
+
+export type AddUserToChat = {
+  chatId: TChat["id"];
+  userId: TUser["id"];
+};
+
+export type AddUserToChatToServer = {
+  id_chat: TChatFromServer["id_chat"];
+  id_user: TUserFromServer["id_user"];
+};

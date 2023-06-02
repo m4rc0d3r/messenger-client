@@ -12,23 +12,15 @@
           v-for="user in foundUsers"
           :key="user.id"
           :user="user"
-          @click="showUserProfile(user)"
+          @click="emit('click-on-user', user)"
         />
       </ul>
     </div>
-    <ModalWindow
-      v-if="userProfileVisibility && selectedUser"
-      @close="userProfileVisibility = false"
-    >
-      <FoundUserProfile :user="selectedUser" @create-chat="createChat" />
-    </ModalWindow>
   </div>
 </template>
 
 <script setup lang="ts">
 import FoundUserCard from "@/components/FoundUserCard.vue";
-import ModalWindow from "@/components/ModalWindow.vue";
-import FoundUserProfile from "@/components/FoundUserProfile.vue";
 import { Notification, NotificationStatus } from "@/schemas/notification";
 import type { TUser } from "@/schemas/user";
 import { UserService } from "@/services/user-service";
@@ -42,10 +34,14 @@ const authStore = useAuthStore();
 const chatStore = useChatStore();
 const notificationStore = useNotificationStore();
 
+const emit = defineEmits({
+  "click-on-user"(user: TUser) {
+    return true;
+  },
+});
+
 const userDataToFind = ref("");
 const foundUsers = ref<TUser[]>([]);
-const userProfileVisibility = ref(false);
-const selectedUser = ref<TUser>();
 
 async function findUsers() {
   if (userDataToFind.value.length > 2) {
@@ -54,19 +50,19 @@ async function findUsers() {
     );
     if (!(result instanceof Error)) {
       foundUsers.value = result
-        .filter((user) => {
-          if (user.id_user !== authStore.currentUser.value?.id) {
-            const message = chatStore.chats.value
-              .filter((chat) => chat.type === ChatType.DIALOGUE)
-              .find((chat) => {
-                return chat.messages.find(
-                  (message) => message.senderId === user.id_user,
-                );
-              });
-            return !message;
-          }
-          return false;
-        })
+        // .filter((user) => {
+        //   if (user.id_user !== authStore.currentUser.value?.id) {
+        //     const message = chatStore.chats.value
+        //       .filter((chat) => chat.type === ChatType.DIALOGUE)
+        //       .find((chat) => {
+        //         return chat.messages.find(
+        //           (message) => message.senderId === user.id_user,
+        //         );
+        //       });
+        //     return !message;
+        //   }
+        //   return false;
+        // })
         .map((user) => {
           return {
             id: user.id_user,
@@ -78,23 +74,6 @@ async function findUsers() {
   } else {
     foundUsers.value = [];
   }
-}
-
-function showUserProfile(user: TUser) {
-  selectedUser.value = user;
-  userProfileVisibility.value = true;
-}
-
-async function createChat(chat: TCreateChat) {
-  const result = await chatStore.createChat(chat);
-  if (result instanceof Error) {
-    notificationStore.add(
-      new Notification(NotificationStatus.FAILURE, result.message),
-    );
-  }
-  userProfileVisibility.value = false;
-  userDataToFind.value = "";
-  foundUsers.value = [];
 }
 </script>
 

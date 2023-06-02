@@ -24,9 +24,7 @@ const name = ref("");
 const form = ref<HTMLFormElement>();
 
 function create() {
-  console.log("hi");
   if (form.value?.checkValidity()) {
-    console.log("hi2");
     emit("create", name.value);
   }
 }

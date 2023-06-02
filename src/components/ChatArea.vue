@@ -1,5 +1,6 @@
 <template>
   <div v-if="chat" class="chat-area">
+    <ChatHeader :chat="chat" />
     <ChatMessageList :messages="chat.messages" />
     <div class="input-block">
       <textarea
@@ -26,6 +27,7 @@
 import { defineProps, ref, type Ref } from "vue";
 import ChatMessageList from "@/components/ChatMessageList.vue";
 import BaseButton from "@/components/BaseButton.vue";
+import ChatHeader from "@/components/ChatHeader.vue";
 import type { TChat } from "@/schemas/chat";
 import type { TMessage, TMessageToSend } from "@/schemas/message";
 import { MessageService } from "@/services/message-service";

@@ -2,6 +2,8 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { ChatService } from "@/services/chat-service";
 import {
+  type AddUserToChat,
+  type AddUserToChatToServer,
   type TChat,
   type TCreateChat,
   type TCreateChatToServer,
@@ -68,5 +70,47 @@ export const useChatStore = defineStore("chat", () => {
     }
   }
 
-  return { chats, getChatsOfUser, addMessageToChat, createChat };
+  async function addUserToChat(userToChat: AddUserToChat) {
+    const userToChatToServer = {
+      id_chat: userToChat.chatId,
+      id_user: userToChat.userId,
+    } as AddUserToChatToServer;
+
+    const result = await ChatService.addUserToChat(userToChatToServer);
+    if (result instanceof Error) {
+      return result;
+    } else {
+      return true;
+    }
+  }
+
+  async function getAllMessagesFromChat(chatId: TChat["id"]) {
+    const result = await ChatService.getAllMessagesFromChat(chatId);
+    if (result instanceof Error) {
+      return result;
+    } else {
+      const chat = _chats.value.find((chat) => chat.id === chatId);
+      if (chat) {
+        chat.messages = result.map((message) => {
+          return {
+            id: message.id_message,
+            text: message.text_message,
+            date: new Date(message.data_time),
+            senderId: message.rk_user,
+            chatId: message.rk_chat,
+          };
+        });
+      }
+      return true;
+    }
+  }
+
+  return {
+    chats,
+    getChatsOfUser,
+    addMessageToChat,
+    createChat,
+    addUserToChat,
+    getAllMessagesFromChat,
+  };
 });

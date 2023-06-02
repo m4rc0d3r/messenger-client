@@ -104,22 +104,19 @@ function hideUserProfile() {
 }
 
 async function createGroupChat(name: string) {
-  console.log("hi3");
   const result = useChatStore().createChat({ type: ChatType.POLYLOGUE, name });
   if (result instanceof Error) {
     notificationStore.add(
       new Notification(NotificationStatus.FAILURE, result.message),
     );
   }
-  setTimeout(() => {
-    groupChatCreationVisibility.value = false;
-  }, 100);
-  console.log("hi4");
+  groupChatCreationVisibility.value = false;
 }
 
 async function logout() {
   await authStore.logout();
   webSocketConnection.close();
+  webSocketConnection.removeAllListeners();
   router.push("/login");
 }
 </script>

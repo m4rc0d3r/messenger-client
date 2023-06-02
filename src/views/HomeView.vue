@@ -1,7 +1,7 @@
 <template>
   <div class="layout">
     <div class="left-bar">
-      <FindUserInput />
+      <FindUserInput @click-on-user="showUserProfile" />
       <ChatList
         :chats="chats"
         :selected-chat="selectedChat"
@@ -9,6 +9,12 @@
       />
     </div>
     <ChatArea :chat="selectedChat" @send-message="addMessageToChat" />
+    <ModalWindow
+      v-if="userProfileVisibility && selectedUser"
+      @close="userProfileVisibility = false"
+    >
+      <FoundUserProfile :user="selectedUser" @create-chat="createChat" />
+    </ModalWindow>
   </div>
 </template>
 
@@ -18,10 +24,12 @@ import { useRouter } from "vue-router";
 import { useChatStore } from "@/stores/chat-store";
 import { Notification, NotificationStatus } from "@/schemas/notification";
 import { useNotificationStore } from "@/stores/notification-store";
-import { type TChat } from "@/schemas/chat";
+import { type TChat, type TCreateChat } from "@/schemas/chat";
 import { APIError } from "@/schemas/api-error";
 import ChatList from "@/components/ChatList.vue";
 import ChatArea from "@/components/ChatArea.vue";
+import ModalWindow from "@/components/ModalWindow.vue";
+import FoundUserProfile from "@/components/FoundUserProfile.vue";
 import FindUserInput from "@/components/FindUserInput.vue";
 import type { TMessage } from "@/schemas/message";
 import { webSocketConnection } from "@/http/websocket";
@@ -30,6 +38,7 @@ import {
   type ISendTokenDTO,
 } from "@/schemas/websocket-data";
 import { useAuthStore } from "@/stores/auth-store";
+import type { TUser } from "@/schemas/user";
 
 const router = useRouter();
 const notificationStore = useNotificationStore();
@@ -38,6 +47,8 @@ const authStore = useAuthStore();
 const chatStore = useChatStore();
 const chats = ref<TChat[]>([]);
 const selectedChat = ref<TChat>();
+const userProfileVisibility = ref(false);
+const selectedUser = ref<TUser>();
 
 onMounted(async () => {
   const result = await chatStore.getChatsOfUser();
@@ -55,11 +66,7 @@ onMounted(async () => {
         new Notification(NotificationStatus.SUCCESS, "You don't have chats"),
       );
     }
-    if (webSocketConnection.status === WebSocket.OPEN)
-      webSocketConnection.send({
-        type: WebSocketDataType.Token,
-        data: authStore.token.value,
-      } as ISendTokenDTO);
+    webSocketConnection.connect();
   }
 });
 
@@ -71,14 +78,30 @@ function addMessageToChat(chatId: TChat["id"], message: TMessage) {
   chatStore.addMessageToChat(chatId, message);
 }
 
+function showUserProfile(user: TUser) {
+  selectedUser.value = user;
+  userProfileVisibility.value = true;
+}
+
+async function createChat(chat: TCreateChat) {
+  const result = await chatStore.createChat(chat);
+  if (result instanceof Error) {
+    notificationStore.add(
+      new Notification(NotificationStatus.FAILURE, result.message),
+    );
+  }
+  userProfileVisibility.value = false;
+}
+
 webSocketConnection.addEventListener("SendMessage", (e) => {
   const message = (e as CustomEvent<TMessage>).detail;
   addMessageToChat(message.chatId, message);
 });
 
-webSocketConnection.addEventListener("CreateChat", (e) => {
+webSocketConnection.addEventListener("CreateChat", async (e) => {
   const chat = (e as CustomEvent<TChat>).detail;
   chatStore.chats.value.push(chat);
+  await chatStore.getAllMessagesFromChat(chat.id);
 });
 </script>
 

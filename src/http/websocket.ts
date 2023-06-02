@@ -9,14 +9,17 @@ import {
   type ISendMessageDTO,
   type ICreateChatDTO,
 } from "@/schemas/websocket-data";
+import { useAuthStore } from "@/stores/auth-store";
 import { useNotificationStore } from "@/stores/notification-store";
+import { pinia } from "@/stores/pinia";
 
 class WebSocketConnection extends EventTarget {
   ws!: WebSocket;
+  listeners: { type: string; callback: EventListenerOrEventListenerObject }[];
 
   constructor() {
     super();
-    this.connect();
+    this.listeners = [];
   }
 
   connect() {
@@ -28,6 +31,10 @@ class WebSocketConnection extends EventTarget {
 
     this.ws.onopen = () => {
       console.log("WebSocket connection established");
+      this.send({
+        type: WebSocketDataType.Token,
+        data: useAuthStore(pinia).token.value,
+      } as ISendTokenDTO);
     };
 
     this.ws.onerror = () => {
@@ -99,6 +106,23 @@ class WebSocketConnection extends EventTarget {
 
   close(...args: Parameters<typeof this.ws.close>) {
     this.ws.close(...args);
+  }
+
+  addEventListener(
+    type: string,
+    callback: EventListenerOrEventListenerObject | null,
+    options?: boolean | AddEventListenerOptions | undefined,
+  ): void {
+    super.addEventListener(type, callback, options);
+    if (callback) {
+      this.listeners.push({ type, callback });
+    }
+  }
+
+  removeAllListeners() {
+    for (const listener of this.listeners) {
+      this.removeEventListener(listener.type, listener.callback);
+    }
   }
 }
 
