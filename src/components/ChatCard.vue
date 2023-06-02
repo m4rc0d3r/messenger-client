@@ -67,6 +67,7 @@ async function updateSender() {
 
 .chat-card:hover {
   background-color: aqua;
+  cursor: pointer;
 }
 
 .chat-card__selected {

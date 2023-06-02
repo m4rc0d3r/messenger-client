@@ -1,8 +1,8 @@
 <template>
   <div class="message-wrapper">
     <p>
-    This project is part of a course project on software design methodologies.
-  </p>
+      This project is part of a course project on software design methodologies.
+    </p>
   </div>
 </template>
 

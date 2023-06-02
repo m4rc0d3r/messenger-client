@@ -14,6 +14,12 @@
           class="main-menu__item"
           >About</RouterLink
         >
+        <span
+          v-if="authStore.isLoggedIn"
+          class="main-menu__item"
+          @click="groupChatCreationVisibility = true"
+          >Create chat</span
+        >
       </div>
       <div>
         <RouterLink
@@ -35,9 +41,13 @@
         >
           {{ authStore.currentUser.value?.nickname }}</span
         >
-        <a v-if="authStore.isLoggedIn" @click="logout" class="main-menu__item">
+        <span
+          v-if="authStore.isLoggedIn"
+          @click="logout"
+          class="main-menu__item"
+        >
           Logout
-        </a>
+        </span>
       </div>
     </nav>
     <RouterView />
@@ -53,6 +63,12 @@
   <ModalWindow v-if="userProfileVisibility" @close="hideUserProfile">
     <UserProfile />
   </ModalWindow>
+  <ModalWindow
+    v-if="groupChatCreationVisibility"
+    @close="groupChatCreationVisibility = false"
+  >
+    <GroupChatCreation @create="createGroupChat" />
+  </ModalWindow>
 </template>
 
 <script setup lang="ts">
@@ -62,8 +78,12 @@ import { useNotificationStore } from "@/stores/notification-store";
 import ModalWindow from "@/components/ModalWindow.vue";
 import UserProfile from "@/components/UserProfile.vue";
 import SimpleNotification from "@/components/SimpleNotification.vue";
+import GroupChatCreation from "./components/GroupChatCreation.vue";
 import { webSocketConnection } from "@/http/websocket";
 import { ref } from "vue";
+import { useChatStore } from "./stores/chat-store";
+import { ChatType } from "./schemas/chat";
+import { Notification, NotificationStatus } from "./schemas/notification";
 
 const notificationStore = useNotificationStore();
 const notifications = notificationStore.notifications;
@@ -73,6 +93,7 @@ const route = useRoute();
 const authStore = useAuthStore();
 
 const userProfileVisibility = ref(false);
+const groupChatCreationVisibility = ref(false);
 
 function showUserProfile() {
   userProfileVisibility.value = true;
@@ -80,6 +101,20 @@ function showUserProfile() {
 
 function hideUserProfile() {
   userProfileVisibility.value = false;
+}
+
+async function createGroupChat(name: string) {
+  console.log("hi3");
+  const result = useChatStore().createChat({ type: ChatType.POLYLOGUE, name });
+  if (result instanceof Error) {
+    notificationStore.add(
+      new Notification(NotificationStatus.FAILURE, result.message),
+    );
+  }
+  setTimeout(() => {
+    groupChatCreationVisibility.value = false;
+  }, 100);
+  console.log("hi4");
 }
 
 async function logout() {

@@ -95,6 +95,7 @@ webSocketConnection.addEventListener("CreateChat", (e) => {
   flex-direction: column;
   align-items: stretch;
   padding: 8px;
+  overflow: hidden;
 }
 
 .left-bar > * {

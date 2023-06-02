@@ -4,7 +4,7 @@ import { AuthService } from "@/services/auth-service";
 import type {
   TRegistrationAndLoginResponse,
   TUser,
-  TUserToEditAuthData,
+  TUserToEdit,
   TUserToLogin,
   TUserToRegister,
 } from "@/schemas/user";
@@ -45,7 +45,22 @@ export const useAuthStore = defineStore("auth", () => {
     return { status: 200, data: "Successful logout" };
   }
 
-  async function updateUserAuthData(user: TUserToEditAuthData) {}
+  async function updateUserData(user: TUserToEdit) {
+    const result = await AuthService.updateUserData({
+      email: user.email,
+      nickname: user.nickname,
+      password: user.password,
+      new_password: user.newPassword,
+    });
+    if (!(result instanceof Error)) {
+      _currentUser.value = {
+        id: result.id_user,
+        email: result.email,
+        nickname: result.nickname,
+      };
+    }
+    return result;
+  }
 
   return {
     token,
@@ -54,6 +69,6 @@ export const useAuthStore = defineStore("auth", () => {
     register,
     login,
     logout,
-    updateUserAuthData,
+    updateUserData,
   };
 });

@@ -12,13 +12,19 @@ export type TUser = {
   password?: string;
 };
 
-export type TUserToEditAuthData = {
+export type TUserToEdit = {
   email?: TUser["email"];
-  password: TUser["password"];
+  nickname?: TUser["nickname"];
+  password?: TUser["password"];
   newPassword?: TUser["password"];
 };
 
-export type TUserToEdit = Pick<TUser, "nickname">;
+export type TUserToEditToServer = {
+  email?: TUserFromServer["email"];
+  nickname?: TUserFromServer["nickname"];
+  password?: TUserFromServer["password"];
+  new_password?: TUserFromServer["password"];
+};
 
 export type TUserToRegister = Pick<TUser, "email" | "nickname" | "password">;
 export type TUserToLogin = Pick<TUser, "email" | "password">;

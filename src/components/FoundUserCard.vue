@@ -22,5 +22,6 @@ const props = defineProps<{
 
 .found-user-card:hover {
   background-color: aqua;
+  cursor: pointer;
 }
 </style>
