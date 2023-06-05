@@ -3,11 +3,16 @@
     <form ref="form" @submit.prevent class="form">
       <div class="fields-to-fill">
         <label for="email">Email</label>
-        <input v-model="user.email" type="email" id="email" required />
+        <BaseInput v-model="user.email" type="email" id="email" required />
         <label for="nickname">Nickname</label>
-        <input v-model="user.nickname" type="text" id="nickname" required />
+        <BaseInput v-model="user.nickname" type="text" id="nickname" required />
         <label for="password">Password</label>
-        <input v-model="user.password" type="password" id="password" required />
+        <BaseInput
+          v-model="user.password"
+          type="password"
+          id="password"
+          required
+        />
       </div>
       <BaseButton @click="register">Register</BaseButton>
       <div>
@@ -24,6 +29,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import BaseButton from "@/components/BaseButton.vue";
+import BaseInput from "@/components/BaseInput.vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth-store";
 import type { TUserToRegister } from "@/schemas/user";
@@ -32,7 +38,7 @@ const router = useRouter();
 const authStore = useAuthStore();
 
 const form = ref<HTMLFormElement>();
-const user = ref<TUserToRegister>({
+const user = ref<Required<TUserToRegister>>({
   nickname: "",
   email: "",
   password: "",
