@@ -33,6 +33,16 @@
         id="new-password"
         v-model="userToEdit.newPassword"
       />
+      <label for="is-private">Is private</label>
+      <span v-if="mode === Mode.VIEW">
+        {{ userToEdit.isPrivate ? "Yes" : "No" }}</span
+      >
+      <input
+        v-else
+        type="checkbox"
+        id="is-private"
+        v-model="userToEdit.isPrivate"
+      />
     </div>
     <div v-if="mode === Mode.VIEW" class="button-block">
       <BaseButton @click="enterEditMode">Edit</BaseButton>
@@ -63,6 +73,7 @@ const userToEdit = ref<TUserToEdit>({
   nickname: "",
   password: "",
   newPassword: "",
+  isPrivate: false,
 });
 const error = ref("");
 
@@ -79,10 +90,12 @@ function enterEditMode() {
     nickname: authStore.currentUser.value?.nickname,
     password: "",
     newPassword: "",
+    isPrivate: authStore.currentUser.value?.isPrivate,
   };
 }
 
 async function updateUser() {
+  console.log(userToEdit.value);
   const result = await authStore.updateUserData(userToEdit.value);
   if (result instanceof Error) {
     error.value = result.message;
@@ -98,6 +111,7 @@ function resetToViewMode() {
     nickname: authStore.currentUser.value?.nickname,
     password: "",
     newPassword: "",
+    isPrivate: authStore.currentUser.value?.isPrivate,
   };
   error.value = "";
 }

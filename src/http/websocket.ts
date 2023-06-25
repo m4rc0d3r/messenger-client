@@ -2,12 +2,14 @@ import { WEB_SOCKET_SERVER_URL } from "@/env";
 import type { ChatType, TChat } from "@/schemas/chat";
 import type { TMessage } from "@/schemas/message";
 import { Notification, NotificationStatus } from "@/schemas/notification";
+import type { TAddedToChatUser } from "@/schemas/user";
 import {
   WebSocketDataType,
   type IWebSocketDataDTO,
   type ISendTokenDTO,
   type ISendMessageDTO,
   type ICreateChatDTO,
+  type IAddUserToChatDTO,
 } from "@/schemas/websocket-data";
 import { useAuthStore } from "@/stores/auth-store";
 import { useNotificationStore } from "@/stores/notification-store";
@@ -92,6 +94,20 @@ class WebSocketConnection extends EventTarget {
           );
           break;
         }
+        case WebSocketDataType.AddUserToChat: {
+          const addedUser = messageEvent.data as IAddUserToChatDTO["data"];
+          this.dispatchEvent(
+            new CustomEvent<TAddedToChatUser>(messageEvent.type, {
+              detail: {
+                id: addedUser.id_user,
+                email: addedUser.email,
+                nickname: addedUser.nickname,
+                chatId: addedUser.id_chat,
+              } as TAddedToChatUser,
+            }),
+          );
+          break;
+        }
         default:
           useNotificationStore().add(
             new Notification(
@@ -100,6 +116,7 @@ class WebSocketConnection extends EventTarget {
             ),
           );
       }
+      console.log("New message:", messageEvent);
     };
   }
 

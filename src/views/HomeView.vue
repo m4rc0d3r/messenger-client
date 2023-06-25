@@ -48,7 +48,7 @@ import {
   type ISendTokenDTO,
 } from "@/schemas/websocket-data";
 import { useAuthStore } from "@/stores/auth-store";
-import type { TUser } from "@/schemas/user";
+import type { TAddedToChatUser, TUser } from "@/schemas/user";
 import { UserService } from "@/services/user-service";
 
 const router = useRouter();
@@ -136,6 +136,20 @@ webSocketConnection.addEventListener("CreateChat", async (e) => {
   const chat = (e as CustomEvent<TChat>).detail;
   chatStore.chats.value.push(chat);
   await chatStore.getAllMessagesFromChat(chat.id);
+});
+
+webSocketConnection.addEventListener("AddUserToChat", async (e) => {
+  const addedUser = (e as CustomEvent<TAddedToChatUser>).detail;
+  const chat = chatStore.chats.value.find(
+    (chat) => chat.id === addedUser.chatId,
+  );
+  if (chat && !chat.users.find((user) => user.id === addedUser.id)) {
+    chat.users.push({
+      id: addedUser.id,
+      email: addedUser.email,
+      nickname: addedUser.nickname,
+    });
+  }
 });
 </script>
 

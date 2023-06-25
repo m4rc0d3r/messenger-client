@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps, ref, type Ref } from "vue";
+import { computed, ref, type Ref } from "vue";
 import ChatMessageList from "@/components/ChatMessageList.vue";
 import BaseButton from "@/components/BaseButton.vue";
 import ChatHeader from "@/components/ChatHeader.vue";

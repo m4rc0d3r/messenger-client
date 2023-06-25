@@ -56,12 +56,14 @@ export const useAuthStore = defineStore("auth", () => {
       nickname: user.nickname,
       password: user.password,
       new_password: user.newPassword,
+      private_acc: user.isPrivate,
     });
     if (!(result instanceof Error)) {
       _currentUser.value = {
         id: result.id_user,
         email: result.email,
         nickname: result.nickname,
+        isPrivate: result.private_acc,
       };
     }
     return result;
