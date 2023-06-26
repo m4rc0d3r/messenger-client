@@ -55,13 +55,6 @@ export const useChatStore = defineStore("chat", () => {
     }
   }
 
-  function addMessageToChat(chatId: TChat["id"], message: TMessage) {
-    const chat = _chats.value.find((chat) => chat.id === chatId);
-    if (chat) {
-      chat.messages.push(message);
-    }
-  }
-
   async function createChat(chat: TCreateChat) {
     const chatToServer = {
       rk_type_chat: chat.type,
@@ -112,6 +105,66 @@ export const useChatStore = defineStore("chat", () => {
     }
   }
 
+  async function editMessage(messageToEdit: TMessage) {
+    const result = await MessageService.editMessage({
+      id: messageToEdit.id,
+      text: messageToEdit.text,
+      chatId: messageToEdit.chatId,
+    });
+    if (result instanceof Error) {
+      return result;
+    } else {
+      return true;
+    }
+  }
+
+  async function deleteMessage(messageToDelete: TMessage) {
+    const result = await MessageService.deleteMessage({
+      id: messageToDelete.id,
+      chatId: messageToDelete.chatId,
+    });
+    if (result instanceof Error) {
+      return result;
+    }
+  }
+
+  function addMessageToChat(chatId: TChat["id"], message: TMessage) {
+    const chat = _chats.value.find((chat) => chat.id === chatId);
+    if (chat) {
+      chat.messages.push(message);
+    }
+  }
+
+  function editMessageInChat(messageToEdit: TMessage) {
+    const chat = _chats.value.find((chat) => chat.id === messageToEdit.chatId);
+    if (chat) {
+      const index = chat.messages.findIndex(
+        (message) => message.id === messageToEdit.id,
+      );
+      if (index > -1) {
+        // messageToEdit.senderId = messageToEdit.senderId
+        //   ? messageToEdit.senderId
+        //   : chat.messages[index].senderId;
+        chat.messages.splice(index, 1, messageToEdit);
+      }
+    }
+  }
+
+  function deleteMessageFromChat(messageToDelete: TMessage) {
+    const chat = _chats.value.find(
+      (chat) => chat.id === messageToDelete.chatId,
+    );
+    if (chat) {
+      const index = chat.messages.findIndex(
+        (message) => message.id === messageToDelete.id,
+      );
+      if (index > -1) {
+        chat.messages.splice(index, 1);
+      }
+    }
+    return true;
+  }
+
   return {
     chats,
     getChatsOfUser,
@@ -119,5 +172,9 @@ export const useChatStore = defineStore("chat", () => {
     createChat,
     addUserToChat,
     getAllMessagesFromChat,
+    editMessage,
+    deleteMessage,
+    editMessageInChat,
+    deleteMessageFromChat,
   };
 });

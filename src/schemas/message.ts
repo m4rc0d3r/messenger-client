@@ -19,3 +19,15 @@ export type TMessageToSendToServer = Pick<
   "text_message"
 > & { id_chat: TMessageFromServer["rk_chat"] };
 export type TMessageToSend = Pick<TMessage, "text" | "chatId">;
+
+export type TMessageToEdit = Pick<TMessage, "id" | "text" | "chatId">;
+export type TMessageToEditToServer = Pick<
+  TMessageFromServer,
+  "id_message" | "text_message" | "rk_chat"
+>;
+
+export type TMessageToDelete = Pick<TMessage, "id" | "chatId">;
+export type TMessageToDeleteToServer = Pick<
+  TMessageFromServer,
+  "id_message" | "rk_chat"
+>;

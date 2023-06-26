@@ -10,6 +10,8 @@ import {
   type ISendMessageDTO,
   type ICreateChatDTO,
   type IAddUserToChatDTO,
+  type IDeleteMessageDTO,
+  type IEditMessageDTO,
 } from "@/schemas/websocket-data";
 import { useAuthStore } from "@/stores/auth-store";
 import { useNotificationStore } from "@/stores/notification-store";
@@ -57,21 +59,6 @@ class WebSocketConnection extends EventTarget {
           );
           break;
         }
-        case WebSocketDataType.SendMessage: {
-          const message = messageEvent.data as ISendMessageDTO["data"];
-          this.dispatchEvent(
-            new CustomEvent<TMessage>(messageEvent.type, {
-              detail: {
-                id: message.id_message,
-                text: message.text_message,
-                date: new Date(message.data_time),
-                senderId: message.rk_user,
-                chatId: message.rk_chat,
-              } as TMessage,
-            }),
-          );
-          break;
-        }
         case WebSocketDataType.CreateChat: {
           const chat = messageEvent.data as ICreateChatDTO["data"];
           this.dispatchEvent(
@@ -104,6 +91,51 @@ class WebSocketConnection extends EventTarget {
                 nickname: addedUser.nickname,
                 chatId: addedUser.id_chat,
               } as TAddedToChatUser,
+            }),
+          );
+          break;
+        }
+        case WebSocketDataType.SendMessage: {
+          const message = messageEvent.data as ISendMessageDTO["data"];
+          this.dispatchEvent(
+            new CustomEvent<TMessage>(messageEvent.type, {
+              detail: {
+                id: message.id_message,
+                text: message.text_message,
+                date: new Date(message.data_time),
+                senderId: message.rk_user,
+                chatId: message.rk_chat,
+              } as TMessage,
+            }),
+          );
+          break;
+        }
+        case WebSocketDataType.EditMessage: {
+          const message = messageEvent.data as IEditMessageDTO["data"];
+          this.dispatchEvent(
+            new CustomEvent<TMessage>(messageEvent.type, {
+              detail: {
+                id: message.id_message,
+                text: message.text_message,
+                date: new Date(message.data_time),
+                senderId: message.rk_user,
+                chatId: message.rk_chat,
+              } as TMessage,
+            }),
+          );
+          break;
+        }
+        case WebSocketDataType.DeleteMessage: {
+          const message = messageEvent.data as IDeleteMessageDTO["data"];
+          this.dispatchEvent(
+            new CustomEvent<TMessage>(messageEvent.type, {
+              detail: {
+                id: message.id_message,
+                text: message.text_message,
+                date: new Date(message.data_time),
+                senderId: message.rk_user,
+                chatId: message.rk_chat,
+              } as TMessage,
             }),
           );
           break;

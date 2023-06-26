@@ -34,3 +34,12 @@ export interface IAddUserToChatDTO
   extends IWebSocketDataDTO<TAddedToChatUserFromServer> {
   type: WebSocketDataType.AddUserToChat;
 }
+
+export interface IEditMessageDTO extends IWebSocketDataDTO<TMessageFromServer> {
+  type: WebSocketDataType.EditMessage;
+}
+
+export interface IDeleteMessageDTO
+  extends IWebSocketDataDTO<TMessageFromServer> {
+  type: WebSocketDataType.DeleteMessage;
+}

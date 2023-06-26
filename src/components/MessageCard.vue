@@ -7,31 +7,64 @@
         authStore.currentUser.value?.id !== message.senderId,
     }"
   >
-    <span class="message__sender">{{ sender?.nickname }}</span>
+    <div class="message__header">
+      <span class="message__sender">{{ sender?.nickname }}</span>
+      <div
+        v-if="
+          authStore.currentUser.value?.id === message.senderId && !isEditedNow
+        "
+        class="buttons"
+      >
+        <span @click="enterEditMode" class="button">Edit</span>
+        <span @click="deleteMessage(message)" class="button">Delete</span>
+      </div>
+    </div>
     <pre class="message__text">{{ message.text }}</pre>
     <span class="message__date">{{ message.date.toISOString() }}</span>
   </li>
 </template>
 
 <script setup lang="ts">
-import { defineProps, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import type { TMessage } from "@/schemas/message";
 import { useAuthStore } from "@/stores/auth-store";
 import { useUserStore } from "@/stores/user-store";
+import { useChatStore } from "@/stores/chat-store";
 import type { TUser } from "@/schemas/user";
 
 const authStore = useAuthStore();
 const userStore = useUserStore();
+const chatStore = useChatStore();
 
 const props = defineProps<{
   message: TMessage;
 }>();
 
+const emit = defineEmits({
+  "enter-edit-mode"(reset: typeof resetToViewMode) {
+    return true;
+  },
+});
+
 const sender = ref<TUser>();
+const isEditedNow = ref(false);
 
 onMounted(async () => {
   sender.value = await userStore.getUserById(props.message.senderId);
 });
+
+async function deleteMessage(message: TMessage) {
+  const result = await chatStore.deleteMessage(message);
+}
+
+function enterEditMode() {
+  emit("enter-edit-mode", resetToViewMode);
+  isEditedNow.value = true;
+}
+
+function resetToViewMode() {
+  isEditedNow.value = false;
+}
 </script>
 
 <style scoped>
@@ -62,6 +95,25 @@ onMounted(async () => {
 
 message-from-someone-else {
   align-self: flex-start;
+}
+
+.message__header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+}
+
+.button {
+  color: rgb(83, 68, 68);
+}
+
+.button:hover {
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .message__sender {

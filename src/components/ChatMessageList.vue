@@ -4,6 +4,10 @@
       v-for="message in messages"
       :key="message.id"
       :message="message"
+      @enter-edit-mode="
+        (resetToViewMode) =>
+          emit('enter-message-editing-mode', message, resetToViewMode)
+      "
     />
   </ul>
   <div v-else class="no-messages-wrapper">
@@ -12,13 +16,19 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref, onUpdated, onMounted } from "vue";
+import { ref, onUpdated, onMounted } from "vue";
 import MessageCard from "@/components/MessageCard.vue";
 import type { TMessage } from "@/schemas/message";
 
 const props = defineProps<{
   messages: TMessage[];
 }>();
+
+const emit = defineEmits({
+  "enter-message-editing-mode"(message: TMessage, resetToViewMode: () => void) {
+    return true;
+  },
+});
 
 const messageList = ref<HTMLUListElement>();
 

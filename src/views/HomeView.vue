@@ -151,6 +151,16 @@ webSocketConnection.addEventListener("AddUserToChat", async (e) => {
     });
   }
 });
+
+webSocketConnection.addEventListener("EditMessage", (e) => {
+  const messageToEdit = (e as CustomEvent<TMessage>).detail;
+  chatStore.editMessageInChat(messageToEdit);
+});
+
+webSocketConnection.addEventListener("DeleteMessage", (e) => {
+  const messageToDelete = (e as CustomEvent<TMessage>).detail;
+  chatStore.deleteMessageFromChat(messageToDelete);
+});
 </script>
 
 <style scoped>
