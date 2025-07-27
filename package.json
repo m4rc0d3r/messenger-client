@@ -14,10 +14,12 @@
   "dependencies": {
     "@vueuse/core": "^10.1.2",
     "axios": "^1.4.0",
+    "fp-ts": "^2.16.10",
     "pinia": "^2.0.36",
     "uuid": "^9.0.0",
     "vue": "^3.3.2",
-    "vue-router": "^4.2.0"
+    "vue-router": "^4.2.0",
+    "zod": "^4.0.10"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.2.0",
