@@ -1,11 +1,11 @@
 import axios from "axios";
 
-import { HTTP_SERVER_URL } from "@/env";
-import { pinia } from "@/stores/pinia";
+import { useConfigStore } from "@/config";
 import { useAuthStore } from "@/stores/auth-store";
+import { pinia } from "@/stores/pinia";
 
 export const defaultAPI = axios.create({
-  baseURL: HTTP_SERVER_URL,
+  baseURL: useConfigStore(pinia).config.serverApp.httpUrl,
 });
 
 defaultAPI.interceptors.request.use((config) => {

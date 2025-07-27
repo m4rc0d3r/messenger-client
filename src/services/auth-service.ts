@@ -1,6 +1,6 @@
-import axios from "axios";
-import { AxiosError, type AxiosResponse } from "axios";
-import { HTTP_SERVER_URL } from "@/env";
+import { useConfigStore } from "@/config";
+import { defaultAPI } from "@/http/axios/default-api";
+import { APIError } from "@/schemas/api-error";
 import type {
   TRegistrationAndLoginResponse,
   TUserFromServer,
@@ -8,14 +8,14 @@ import type {
   TUserToLogin,
   TUserToRegister,
 } from "@/schemas/user";
-import { APIError } from "@/schemas/api-error";
-import { defaultAPI } from "@/http/axios/default-api";
+import { pinia } from "@/stores/pinia";
+import axios, { AxiosError, type AxiosResponse } from "axios";
 
 export class AuthService {
   public static async register(user: TUserToRegister) {
     try {
       const response = await axios.post<TRegistrationAndLoginResponse>(
-        `${HTTP_SERVER_URL}users/register`,
+        `${useConfigStore(pinia).config.serverApp.httpUrl}/users/register`,
         user,
       );
 
@@ -35,7 +35,7 @@ export class AuthService {
   public static async login(user: TUserToLogin) {
     try {
       const response = await axios.post<TRegistrationAndLoginResponse>(
-        `${HTTP_SERVER_URL}users/login`,
+        `${useConfigStore(pinia).config.serverApp.httpUrl}/users/login`,
         user,
       );
 
@@ -56,7 +56,7 @@ export class AuthService {
     console.log("User to edit:", user);
     try {
       const response = await defaultAPI.post<TUserFromServer>(
-        `${HTTP_SERVER_URL}users/edituser`,
+        `${useConfigStore(pinia).config.serverApp.httpUrl}/users/edituser`,
         user,
       );
 

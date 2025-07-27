@@ -1,4 +1,4 @@
-import { WEB_SOCKET_SERVER_URL } from "@/env";
+import { useConfigStore } from "@/config";
 import type { TChat } from "@/schemas/chat";
 import type { TMessage } from "@/schemas/message";
 import { Notification, NotificationStatus } from "@/schemas/notification";
@@ -31,7 +31,9 @@ class WebSocketConnection extends EventTarget {
       this.close();
     }
 
-    this.ws = new WebSocket(WEB_SOCKET_SERVER_URL);
+    this.ws = new WebSocket(
+      useConfigStore(pinia).config.serverApp.websocketUrl,
+    );
 
     this.ws.onopen = () => {
       console.log("WebSocket connection established");
