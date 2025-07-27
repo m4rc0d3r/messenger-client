@@ -16,19 +16,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUpdated, onMounted } from "vue";
 import MessageCard from "@/components/MessageCard.vue";
 import type { TMessage } from "@/schemas/message";
+import { onMounted, onUpdated, ref } from "vue";
 
-const props = defineProps<{
+defineProps<{
   messages: TMessage[];
 }>();
 
-const emit = defineEmits({
-  "enter-message-editing-mode"(message: TMessage, resetToViewMode: () => void) {
-    return true;
-  },
-});
+const emit = defineEmits<{
+  "enter-message-editing-mode": [
+    message: TMessage,
+    resetToViewMode: () => void,
+  ];
+}>();
 
 const messageList = ref<HTMLUListElement>();
 

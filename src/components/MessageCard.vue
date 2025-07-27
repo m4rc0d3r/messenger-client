@@ -63,18 +63,18 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import type { TMessage } from "@/schemas/message";
-import { useAuthStore } from "@/stores/auth-store";
-import { useUserStore } from "@/stores/user-store";
-import { useChatStore } from "@/stores/chat-store";
-import { useNotificationStore } from "@/stores/notification-store";
-import type { TUser } from "@/schemas/user";
-import ModalWindow from "@/components/ModalWindow.vue";
 import BaseButton from "@/components/BaseButton.vue";
 import ChatList from "@/components/ChatList.vue";
+import ModalWindow from "@/components/ModalWindow.vue";
 import type { TChat } from "@/schemas/chat";
+import type { TMessage } from "@/schemas/message";
 import { Notification, NotificationStatus } from "@/schemas/notification";
+import type { TUser } from "@/schemas/user";
+import { useAuthStore } from "@/stores/auth-store";
+import { useChatStore } from "@/stores/chat-store";
+import { useNotificationStore } from "@/stores/notification-store";
+import { useUserStore } from "@/stores/user-store";
+import { onMounted, ref } from "vue";
 
 const authStore = useAuthStore();
 const userStore = useUserStore();
@@ -85,11 +85,9 @@ const props = defineProps<{
   message: TMessage;
 }>();
 
-const emit = defineEmits({
-  "enter-edit-mode"(reset: typeof resetToViewMode) {
-    return true;
-  },
-});
+const emit = defineEmits<{
+  "enter-edit-mode": [reset: typeof resetToViewMode];
+}>();
 
 const sender = ref<TUser>();
 const isEditedNow = ref(false);
@@ -101,7 +99,7 @@ onMounted(async () => {
 });
 
 async function deleteMessage(message: TMessage) {
-  const result = await chatStore.deleteMessage(message);
+  await chatStore.deleteMessage(message);
 }
 
 function enterEditMode() {

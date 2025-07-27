@@ -9,15 +9,13 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+defineProps<{
   modelValue: string;
 }>();
 
-const emit = defineEmits({
-  "update:modelValue"(value: string) {
-    return true;
-  },
-});
+const emit = defineEmits<{
+  "update:modelValue": [value: string];
+}>();
 </script>
 
 <style scoped>

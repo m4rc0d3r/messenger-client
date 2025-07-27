@@ -14,16 +14,14 @@
 import ChatCard from "@/components/ChatCard.vue";
 import type { TChat } from "@/schemas/chat";
 
-const props = defineProps<{
+defineProps<{
   chats: TChat[];
   selectedChat?: TChat;
 }>();
 
-const emit = defineEmits({
-  select(chat: TChat) {
-    return true;
-  },
-});
+const emit = defineEmits<{
+  select: [chat: TChat];
+}>();
 </script>
 
 <style scoped>

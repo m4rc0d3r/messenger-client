@@ -14,7 +14,6 @@
 <script setup lang="ts">
 import type { TChat } from "@/schemas/chat";
 import type { TUser } from "@/schemas/user";
-import { useChatStore } from "@/stores/chat-store";
 import { useUserStore } from "@/stores/user-store";
 import { onMounted, onUpdated, ref } from "vue";
 
@@ -30,7 +29,6 @@ const emit = defineEmits({
 });
 
 const userStore = useUserStore();
-const chatStore = useChatStore();
 
 const sender = ref<TUser>();
 

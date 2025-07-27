@@ -8,7 +8,7 @@
 <script setup lang="ts">
 import type { TUser } from "@/schemas/user";
 
-const props = defineProps<{
+defineProps<{
   user: TUser;
 }>();
 </script>

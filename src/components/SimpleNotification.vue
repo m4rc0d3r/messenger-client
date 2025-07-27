@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import { Notification } from "@/schemas/notification";
 
-const props = defineProps({
+defineProps({
   notification: {
     type: Notification,
     required: true,

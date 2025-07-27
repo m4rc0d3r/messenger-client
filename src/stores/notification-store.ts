@@ -1,7 +1,6 @@
-import { ref, computed } from "vue";
-import { defineStore } from "pinia";
-import { ChatService } from "@/services/chat-service";
 import { Notification } from "@/schemas/notification";
+import { defineStore } from "pinia";
+import { computed, ref } from "vue";
 
 const errorLifetime = 5000;
 

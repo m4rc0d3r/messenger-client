@@ -1,15 +1,9 @@
-import { ref, computed } from "vue";
-import { defineStore } from "pinia";
-import { AuthService } from "@/services/auth-service";
-import type {
-  TRegistrationAndLoginResponse,
-  TUser,
-  TUserToLogin,
-  TUserToRegister,
-} from "@/schemas/user";
-import { UserService } from "@/services/user-service";
-import { useNotificationStore } from "./notification-store";
 import { Notification, NotificationStatus } from "@/schemas/notification";
+import type { TUser } from "@/schemas/user";
+import { UserService } from "@/services/user-service";
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import { useNotificationStore } from "./notification-store";
 
 export const useUserStore = defineStore("user", () => {
   const _users = ref<Map<TUser["id"], TUser>>(new Map());

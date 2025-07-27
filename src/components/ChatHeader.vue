@@ -71,30 +71,28 @@
 
 <script setup lang="ts">
 import BaseButton from "@/components/BaseButton.vue";
-import ModalWindow from "@/components/ModalWindow.vue";
+import BaseInput from "@/components/BaseInput.vue";
 import FindUserInput from "@/components/FindUserInput.vue";
-import { type TChat, ChatType, type TCreateChat } from "@/schemas/chat";
-import { onMounted, ref } from "vue";
-import { useChatStore } from "@/stores/chat-store";
-import type { TUser } from "@/schemas/user";
-import { useNotificationStore } from "@/stores/notification-store";
-import { Notification, NotificationStatus } from "@/schemas/notification";
-import { UserService } from "@/services/user-service";
-import { useAuthStore } from "@/stores/auth-store";
+import ModalWindow from "@/components/ModalWindow.vue";
 import UserCard from "@/components/UserCard.vue";
 import UserProfile from "@/components/UserProfile.vue";
-import BaseInput from "@/components/BaseInput.vue";
+import { ChatType, type TChat, type TCreateChat } from "@/schemas/chat";
+import { Notification, NotificationStatus } from "@/schemas/notification";
+import type { TUser } from "@/schemas/user";
+import { UserService } from "@/services/user-service";
+import { useAuthStore } from "@/stores/auth-store";
+import { useChatStore } from "@/stores/chat-store";
+import { useNotificationStore } from "@/stores/notification-store";
+import { onMounted, ref } from "vue";
 
 const props = defineProps<{
   chat: TChat;
   messageFilter: string;
 }>();
 
-const emit = defineEmits({
-  "update:messageFilter"(value: string) {
-    return true;
-  },
-});
+const emit = defineEmits<{
+  "update:messageFilter": [value: string];
+}>();
 
 const chatStore = useChatStore();
 const notificationStore = useNotificationStore();

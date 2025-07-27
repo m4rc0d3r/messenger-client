@@ -14,11 +14,9 @@
 import { ref } from "vue";
 import BaseButton from "./BaseButton.vue";
 
-const emit = defineEmits({
-  create(name: string) {
-    return true;
-  },
-});
+const emit = defineEmits<{
+  create: [name: string];
+}>();
 
 const name = ref("");
 const form = ref<HTMLFormElement>();

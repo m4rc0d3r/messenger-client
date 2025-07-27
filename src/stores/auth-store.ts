@@ -1,13 +1,12 @@
-import { ref, computed } from "vue";
-import { defineStore } from "pinia";
-import { AuthService } from "@/services/auth-service";
 import type {
-  TRegistrationAndLoginResponse,
   TUser,
   TUserToEdit,
   TUserToLogin,
   TUserToRegister,
 } from "@/schemas/user";
+import { AuthService } from "@/services/auth-service";
+import { defineStore } from "pinia";
+import { computed, ref } from "vue";
 
 export const useAuthStore = defineStore("auth", () => {
   const _token = ref("");

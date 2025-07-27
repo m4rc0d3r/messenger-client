@@ -24,30 +24,19 @@
 </template>
 
 <script setup lang="ts">
+import BaseInput from "@/components/BaseInput.vue";
 import UserCard from "@/components/UserCard.vue";
 import type { TUser } from "@/schemas/user";
-import { useAuthStore } from "@/stores/auth-store";
-import { useChatStore } from "@/stores/chat-store";
-import { useNotificationStore } from "@/stores/notification-store";
-import BaseInput from "@/components/BaseInput.vue";
 
-const authStore = useAuthStore();
-const chatStore = useChatStore();
-const notificationStore = useNotificationStore();
-
-const props = defineProps<{
+defineProps<{
   userDataToFind: string;
   foundUsers: TUser[];
 }>();
 
-const emit = defineEmits({
-  "click-on-user"(user: TUser) {
-    return true;
-  },
-  "update:userDataToFind"(value: string) {
-    return true;
-  },
-});
+const emit = defineEmits<{
+  "click-on-user": [user: TUser];
+  "update:userDataToFind": [value: string];
+}>();
 </script>
 
 <style scoped>

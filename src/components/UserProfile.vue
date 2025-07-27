@@ -16,21 +16,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import type { TUser } from "@/schemas/user";
 import BaseButton from "@/components/BaseButton.vue";
 import { ChatType, type TCreateChat } from "@/schemas/chat";
+import type { TUser } from "@/schemas/user";
 import { useChatStore } from "@/stores/chat-store";
+import { onMounted, ref } from "vue";
 
 const props = defineProps<{
   user: TUser;
 }>();
 
-const emit = defineEmits({
-  "create-chat"(chat: TCreateChat) {
-    return true;
-  },
-});
+const emit = defineEmits<{
+  "create-chat": [chat: TCreateChat];
+}>();
 
 const chatWithUserAlreadyExists = ref(false);
 

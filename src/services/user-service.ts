@@ -1,15 +1,8 @@
-import axios from "axios";
-import { AxiosError, type AxiosResponse } from "axios";
 import { HTTP_SERVER_URL } from "@/env";
-import type {
-  TRegistrationAndLoginResponse,
-  TUser,
-  TUserFromServer,
-  TUserToLogin,
-  TUserToRegister,
-} from "@/schemas/user";
-import { APIError } from "@/schemas/api-error";
 import { defaultAPI } from "@/http/axios/default-api";
+import { APIError } from "@/schemas/api-error";
+import type { TUser, TUserFromServer } from "@/schemas/user";
+import { AxiosError, type AxiosResponse } from "axios";
 
 export class UserService {
   public static async getUserById(id: TUser["id"]) {

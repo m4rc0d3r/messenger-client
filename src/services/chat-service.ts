@@ -1,14 +1,12 @@
-import { AxiosError, type AxiosResponse } from "axios";
-import { APIError } from "@/schemas/api-error";
 import { defaultAPI } from "@/http/axios/default-api";
+import { APIError } from "@/schemas/api-error";
 import type {
-  AddUserToChat,
   AddUserToChatToServer,
   TChatFromServer,
-  TCreateChat,
   TCreateChatToServer,
 } from "@/schemas/chat";
 import type { TMessageFromServer } from "@/schemas/message";
+import { AxiosError, type AxiosResponse } from "axios";
 
 export class ChatService {
   public static async getChatsOfUser() {

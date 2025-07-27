@@ -38,16 +38,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, type Ref } from "vue";
-import ChatMessageList from "@/components/ChatMessageList.vue";
 import BaseButton from "@/components/BaseButton.vue";
 import ChatHeader from "@/components/ChatHeader.vue";
+import ChatMessageList from "@/components/ChatMessageList.vue";
 import type { TChat } from "@/schemas/chat";
 import type { TMessage, TMessageToSend } from "@/schemas/message";
-import { MessageService } from "@/services/message-service";
 import { Notification, NotificationStatus } from "@/schemas/notification";
-import { useNotificationStore } from "@/stores/notification-store";
+import { MessageService } from "@/services/message-service";
 import { useChatStore } from "@/stores/chat-store";
+import { useNotificationStore } from "@/stores/notification-store";
+import { computed, ref } from "vue";
 
 enum Mode {
   SEND,
@@ -57,12 +57,6 @@ enum Mode {
 const props = defineProps<{
   chat?: TChat;
 }>();
-
-const emit = defineEmits({
-  "send-message"(chatId: TChat["id"], message: TMessage) {
-    return true;
-  },
-});
 
 const notificationStore = useNotificationStore();
 const chatStore = useChatStore();
@@ -128,7 +122,7 @@ function enterMessageEditingMode(
 
 async function editMessage() {
   editedMessage.value.text = messageToSendOrToEdit.value;
-  const result = await chatStore.editMessage(editedMessage.value);
+  await chatStore.editMessage(editedMessage.value);
   if (resetMessageToViewMode.value) {
     resetMessageToViewMode.value();
   }

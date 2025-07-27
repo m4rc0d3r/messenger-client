@@ -29,27 +29,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import { useChatStore } from "@/stores/chat-store";
-import { Notification, NotificationStatus } from "@/schemas/notification";
-import { useNotificationStore } from "@/stores/notification-store";
-import { type TChat, type TCreateChat } from "@/schemas/chat";
-import { APIError } from "@/schemas/api-error";
-import ChatList from "@/components/ChatList.vue";
 import ChatArea from "@/components/ChatArea.vue";
+import ChatList from "@/components/ChatList.vue";
+import FindUserInput from "@/components/FindUserInput.vue";
 import ModalWindow from "@/components/ModalWindow.vue";
 import UserProfile from "@/components/UserProfile.vue";
-import FindUserInput from "@/components/FindUserInput.vue";
-import type { TMessage } from "@/schemas/message";
 import { webSocketConnection } from "@/http/websocket";
-import {
-  WebSocketDataType,
-  type ISendTokenDTO,
-} from "@/schemas/websocket-data";
-import { useAuthStore } from "@/stores/auth-store";
+import { APIError } from "@/schemas/api-error";
+import { type TChat, type TCreateChat } from "@/schemas/chat";
+import type { TMessage } from "@/schemas/message";
+import { Notification, NotificationStatus } from "@/schemas/notification";
 import type { TAddedToChatUser, TUser } from "@/schemas/user";
 import { UserService } from "@/services/user-service";
+import { useAuthStore } from "@/stores/auth-store";
+import { useChatStore } from "@/stores/chat-store";
+import { useNotificationStore } from "@/stores/notification-store";
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 
 const router = useRouter();
 const notificationStore = useNotificationStore();
