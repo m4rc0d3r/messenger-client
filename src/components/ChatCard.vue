@@ -12,11 +12,11 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, onMounted, onUpdated, ref } from "vue";
 import type { TChat } from "@/schemas/chat";
 import type { TUser } from "@/schemas/user";
-import { useUserStore } from "@/stores/user-store";
 import { useChatStore } from "@/stores/chat-store";
+import { useUserStore } from "@/stores/user-store";
+import { onMounted, onUpdated, ref } from "vue";
 
 const props = defineProps<{
   chat: TChat;
