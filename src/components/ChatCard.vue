@@ -1,7 +1,11 @@
 <template>
   <li
     @click="emit('select')"
-    :class="{ 'chat-card': true, 'chat-card__selected': selected }"
+    :class="{
+      'chat-card': true,
+      'chat-card__selected': selected,
+      'chat-card__no-selected': !selected,
+    }"
   >
     <span>{{ chat.name }}</span>
     <span v-if="chat.messages.length > 0"
@@ -63,12 +67,13 @@ async function updateSender() {
   text-overflow: ellipsis;
 }
 
-.chat-card:hover {
-  background-color: aqua;
+.chat-card__no-selected:hover {
+  background-color: var(--secondary);
   cursor: pointer;
 }
 
 .chat-card__selected {
-  background-color: #369bb4;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
 }
 </style>

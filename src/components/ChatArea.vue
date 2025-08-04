@@ -19,14 +19,15 @@
             }
           }
         }"
-      ></textarea>
+      >
+      </textarea>
       <BaseButton
         v-if="mode === Mode.SEND"
-        @click="sendMessage"
         class="input-block__button"
+        @click="sendMessage"
         >Send</BaseButton
       >
-      <div v-else>
+      <div class="input-block__buttons" v-else>
         <BaseButton @click="editMessage">Save</BaseButton>
         <BaseButton @click="resetToSendMode">Cancel</BaseButton>
       </div>
@@ -140,13 +141,31 @@ async function editMessage() {
 
 .input-block {
   display: flex;
+  padding: calc(var(--step) * 2);
+  gap: calc(var(--step) * 2);
 }
 
 .input-block__input {
   resize: none;
   flex-grow: 1;
-  border-radius: 8px;
-  margin-right: 8px;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-sm);
+  font-family: "Roboto", sans-serif;
+}
+
+.input-block__input:focus-visible {
+  outline: calc(var(--step) / 2) solid var(--primary);
+}
+
+.input-block__button {
+  align-self: center;
+}
+
+.input-block__buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: calc(var(--step) * 2);
 }
 
 .select-chat-message {

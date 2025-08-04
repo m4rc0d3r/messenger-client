@@ -11,14 +11,24 @@
       class="find-user-block__input"
     />
     <div class="find-user-block__found-users-wrapper">
-      <ul class="find-user-block__found-users">
+      <ul
+        v-if="foundUsers && foundUsers.length > 0"
+        class="find-user-block__found-users"
+      >
         <UserCard
           v-for="user in foundUsers"
           :key="user.id"
           :user="user"
+          class="user-card"
           @click="emit('click-on-user', user)"
         />
       </ul>
+      <div
+        v-else-if="foundUsers && foundUsers.length === 0"
+        class="no-users-found-wrapper"
+      >
+        <p class="no-users-found">No users found.</p>
+      </div>
     </div>
   </div>
 </template>
@@ -30,7 +40,7 @@ import type { TUser } from "@/schemas/user";
 
 defineProps<{
   userDataToFind: string;
-  foundUsers: TUser[];
+  foundUsers: TUser[] | null;
 }>();
 
 const emit = defineEmits<{
@@ -56,16 +66,35 @@ const emit = defineEmits<{
 .find-user-block__found-users {
   width: 100%;
   position: absolute;
+  top: var(--step);
   overflow: auto;
   max-height: 200px;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-lg);
   background: linear-gradient(to right, #d4d9b7, #66997d);
 }
 
-.find-user-block__found-users > * {
-  margin-top: 4px;
+.no-users-found-wrapper {
+  background: linear-gradient(to right, #d4d9b7, #66997d);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  position: absolute;
+  top: var(--step);
+  height: calc(var(--step) * 20);
+  display: flex;
 }
 
-.find-user-block__found-users > *:first-child {
-  margin-top: 0;
+.no-users-found {
+  margin: auto;
+}
+
+.user-card {
+  padding: var(--step) calc(var(--step) * 2);
+}
+
+.user-card:hover {
+  background-color: aqua;
+  cursor: pointer;
 }
 </style>

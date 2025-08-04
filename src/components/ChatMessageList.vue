@@ -11,7 +11,7 @@
     />
   </ul>
   <div v-else class="no-messages-wrapper">
-    <p class="no-messages">No messages</p>
+    <p class="no-messages">There are no messages in this chat yet.</p>
   </div>
 </template>
 
@@ -35,7 +35,10 @@ const messageList = ref<HTMLUListElement>();
 
 function scrollToLastMessage() {
   if (messageList.value) {
-    messageList.value.scrollTop = messageList.value.scrollHeight;
+    messageList.value.scroll({
+      top: messageList.value.scrollHeight,
+      behavior: "smooth",
+    });
   }
 }
 
@@ -80,5 +83,6 @@ onUpdated(() => {
 
 .no-messages {
   font-size: 36px;
+  text-align: center;
 }
 </style>

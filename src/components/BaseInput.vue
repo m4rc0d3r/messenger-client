@@ -20,12 +20,12 @@ const emit = defineEmits<{
 
 <style scoped>
 .input {
-  border: 1px solid aqua;
-  border-radius: 4px;
-  box-sizing: border-box;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-sm);
+  font-family: "Roboto", sans-serif;
 }
-.input:focus {
-  border: 3px solid #369bb4;
-  outline: none;
+
+.input:focus-visible {
+  outline: calc(var(--step) / 2) solid var(--primary);
 }
 </style>

@@ -10,7 +10,7 @@
         {{ chat.name }}
       </h3>
     </div>
-    <div>
+    <div class="filter-messages-block">
       <label for="message-filter">Filter messages</label>
       <BaseInput
         type="text"
@@ -25,20 +25,36 @@
       v-if="showChatInfoWindowVisibility"
       @close="showChatInfoWindowVisibility = false"
     >
-      <div class="chat-info-content">
-        <p class="members-title">Members</p>
-        <ul class="user-list">
-          <UserCard
-            v-for="user in chat.users"
-            :key="user.id"
-            :user="user"
-            @click="showUserProfile(user)"
-          />
-        </ul>
-        <BaseButton @click="userAddWindowVisibility = true"
-          >Add user</BaseButton
-        >
-      </div>
+      <Card class="chat-info-card">
+        <CardHeader>
+          <CardTitle>Chat info</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul class="chat-info-card-content">
+            <li>
+              <h4>Name</h4>
+              <p>{{ chat.name }}</p>
+            </li>
+            <li>
+              <h4>Members</h4>
+              <ul class="chat-info-card-user-list">
+                <UserCard
+                  v-for="user in chat.users"
+                  :key="user.id"
+                  :user="user"
+                  class="chat-info-user-card"
+                  @click="showUserProfile(user)"
+                />
+              </ul>
+            </li>
+          </ul>
+        </CardContent>
+        <CardFooter class="chat-info-card-footer">
+          <BaseButton @click="userAddWindowVisibility = true"
+            >Add a participant</BaseButton
+          >
+        </CardFooter>
+      </Card>
     </ModalWindow>
   </Teleport>
   <Teleport to="body">
@@ -46,17 +62,24 @@
       v-if="userAddWindowVisibility"
       @close="userAddWindowVisibility = false"
     >
-      <FindUserInput
-        :user-data-to-find="userDataToFind"
-        :found-users="foundUsers"
-        @update:user-data-to-find="
-          (value) => {
-            userDataToFind = value;
-            findUsers();
-          }
-        "
-        @click-on-user="addUserToChat"
-      />
+      <Card class="add-participant-card">
+        <CardHeader>
+          <CardTitle>Add a participant to the chat</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <FindUserInput
+            :user-data-to-find="userDataToFind"
+            :found-users="foundUsers"
+            @update:user-data-to-find="
+              (value) => {
+                userDataToFind = value;
+                findUsers();
+              }
+            "
+            @click-on-user="addUserToChat"
+          />
+        </CardContent>
+      </Card>
     </ModalWindow>
   </Teleport>
   <Teleport to="body">
@@ -72,6 +95,13 @@
 <script setup lang="ts">
 import BaseButton from "@/components/BaseButton.vue";
 import BaseInput from "@/components/BaseInput.vue";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/card";
 import FindUserInput from "@/components/FindUserInput.vue";
 import ModalWindow from "@/components/ModalWindow.vue";
 import UserCard from "@/components/UserCard.vue";
@@ -100,7 +130,7 @@ const notificationStore = useNotificationStore();
 const userAddWindowVisibility = ref(false);
 const showChatInfoWindowVisibility = ref(false);
 const userDataToFind = ref("");
-const foundUsers = ref<TUser[]>([]);
+const foundUsers = ref<TUser[] | null>(null);
 const interlocutor = ref<TUser>();
 const userProfileVisibility = ref(false);
 const selectedUser = ref<TUser>();
@@ -124,7 +154,7 @@ async function findUsers() {
       });
     }
   } else {
-    foundUsers.value = [];
+    foundUsers.value = null;
   }
 }
 
@@ -140,7 +170,7 @@ async function addUserToChat(user: TUser) {
   }
   userAddWindowVisibility.value = false;
   userDataToFind.value = "";
-  foundUsers.value = [];
+  foundUsers.value = null;
 }
 
 function getInterlocutor() {
@@ -173,8 +203,8 @@ async function createChat(chat: TCreateChat) {
 .header {
   display: flex;
   justify-content: space-between;
-  background-color: aqua;
-  padding: 16px;
+  background-color: var(--secondary);
+  padding: calc(var(--step) * 2);
 }
 
 .chat-name {
@@ -183,29 +213,43 @@ async function createChat(chat: TCreateChat) {
 }
 
 .chat-name:hover {
-  font-size: 28px;
+  cursor: pointer;
 }
 
-.user-list {
-  padding: 12px;
+.filter-messages-block {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--step) * 2);
 }
 
-.user-list > * {
-  margin-top: 8px;
+.chat-info-card,
+.add-participant-card {
+  padding: calc(var(--step) * 2);
 }
 
-.user-list > *:first-child {
-  margin-top: 0;
-}
-
-.chat-info-content {
+.chat-info-card-content {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 12px;
+  gap: calc(var(--step) * 4);
 }
 
-.members-title {
-  font-size: 18px;
+.chat-info-card-content > * {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--step) * 2);
+}
+
+.chat-info-card-user-list {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--step) * 2);
+}
+
+.chat-info-card-footer {
+  justify-content: end;
+}
+
+.chat-info-user-card:hover {
+  cursor: pointer;
 }
 </style>

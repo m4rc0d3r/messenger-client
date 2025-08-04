@@ -19,9 +19,4 @@ defineProps<{
   flex-direction: column;
   border-radius: 8px;
 }
-
-.found-user-card:hover {
-  background-color: aqua;
-  cursor: pointer;
-}
 </style>

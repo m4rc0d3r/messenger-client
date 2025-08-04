@@ -5,6 +5,7 @@
       :key="chat.id"
       :chat="chat"
       :selected="chat === selectedChat"
+      class="chat-card"
       @select="emit('select', chat)"
     />
   </ul>
@@ -28,12 +29,11 @@ const emit = defineEmits<{
 .chat-list {
   overflow: auto;
   max-width: 100%;
-}
-.chat-list > * {
-  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
 }
 
-.chat-list > *:first-child {
-  margin-top: 0;
+.chat-card {
+  padding: calc(var(--step) * 2);
 }
 </style>

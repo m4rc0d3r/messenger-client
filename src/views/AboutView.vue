@@ -1,7 +1,8 @@
 <template>
   <div class="message-wrapper">
     <p>
-      This project is part of a course project on software design methodologies.
+      This is a very simple application for exchanging messages with other
+      people.
     </p>
   </div>
 </template>

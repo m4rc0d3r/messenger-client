@@ -2,48 +2,73 @@
   <li
     :class="{
       'message-card': true,
-      'my-message': authStore.currentUser.value?.id === message.senderId,
-      'message-from-someone-else':
+      'my-message-wrapper':
+        authStore.currentUser.value?.id === message.senderId,
+      'message-from-someone-else-wrapper':
         authStore.currentUser.value?.id !== message.senderId,
     }"
   >
-    <div class="message__header">
-      <span class="message__sender">{{ sender?.nickname }}</span>
-      <div class="buttons">
-        <span
-          @click="tryToForwardMessage(message)"
-          class="button-to-manage-message"
-          >Forward</span
-        >
-        <span
-          v-if="
-            authStore.currentUser.value?.id === message.senderId && !isEditedNow
-          "
-          @click="enterEditMode"
-          class="button-to-manage-message"
-          >Edit</span
-        >
-        <span
-          v-if="
-            authStore.currentUser.value?.id === message.senderId && !isEditedNow
-          "
-          @click="deleteMessageWindowVisibility = true"
-          class="button-to-manage-message"
-          >Delete</span
-        >
-      </div>
-    </div>
-    <pre class="message__text">{{ message.text }}</pre>
-    <span class="message__date">{{ message.date.toISOString() }}</span>
+    <Card
+      :class="{
+        'message-card': true,
+      }"
+    >
+      <CardHeader>
+        <CardTitle>{{ sender?.nickname }}</CardTitle>
+        <CardAction class="message-card-action">
+          <button @click="tryToForwardMessage(message)">Forward</button>
+          <button
+            v-if="
+              authStore.currentUser.value?.id === message.senderId &&
+              !isEditedNow
+            "
+            @click="enterEditMode"
+          >
+            Edit
+          </button>
+          <button
+            v-if="
+              authStore.currentUser.value?.id === message.senderId &&
+              !isEditedNow
+            "
+            @click="deleteMessageWindowVisibility = true"
+          >
+            Delete
+          </button>
+        </CardAction>
+      </CardHeader>
+      <CardContent>
+        <pre class="message__text">{{ message.text }}</pre>
+      </CardContent>
+      <CardFooter class="message-card-footer">
+        <time :datetime="message.date.toISOString()">{{
+          new Intl.DateTimeFormat("en", {
+            dateStyle: "long",
+            timeStyle: "medium",
+          }).format(message.date)
+        }}</time>
+      </CardFooter>
+    </Card>
     <ModalWindow
       v-if="chatsWindowVisibility"
       @close="chatsWindowVisibility = false"
     >
-      <ChatList
-        :chats="chatStore.chats.value"
-        :selected-chat="undefined"
-        @select="(chat) => forwardMessage(chat, message)"
-      />
+      <Card class="forward-message-card">
+        <CardHeader>
+          <CardTitle>Forward message</CardTitle>
+          <CardDescription
+            >Select the chat you want to forward the message
+            to.</CardDescription
+          >
+        </CardHeader>
+        <CardContent>
+          <ChatList
+            :chats="chatStore.chats.value"
+            :selected-chat="undefined"
+            @select="(chat) => forwardMessage(chat, message)"
+          />
+        </CardContent>
+      </Card>
     </ModalWindow>
     <ModalWindow
       v-if="deleteMessageWindowVisibility"
@@ -64,6 +89,15 @@
 
 <script setup lang="ts">
 import BaseButton from "@/components/BaseButton.vue";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/card";
 import ChatList from "@/components/ChatList.vue";
 import ModalWindow from "@/components/ModalWindow.vue";
 import type { TChat } from "@/schemas/chat";
@@ -141,75 +175,62 @@ async function tryToForwardMessage(message: TMessage) {
 </script>
 
 <style scoped>
-.message-card {
-  background-color: white;
-  padding: 8px;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  max-width: 70%;
-}
-
-.my-message {
+.my-message-wrapper {
   align-self: flex-end;
   max-width: 70%;
 }
 
-.my-message > * {
+.my-message-wrapper > * {
   text-overflow: ellipsis;
 }
 
-message-from-someone-else {
+.message-from-someone-else-wrapper {
   align-self: flex-start;
 }
 
-.message__header {
-  display: flex;
-  justify-content: space-between;
+.message-card {
+  gap: calc(var(--step) * 2);
+  padding: calc(var(--step) * 2);
 }
 
-.buttons {
-  display: flex;
-  flex-direction: column;
+.message-card-action > * {
+  color: var(--primary);
+  background-color: transparent;
+  border: none;
 }
 
-.button-to-manage-message {
-  color: rgb(83, 68, 68);
-}
-
-.button-to-manage-message:hover {
+.message-card-action > *:hover {
   text-decoration: underline;
   cursor: pointer;
 }
 
-.message__sender {
-  align-self: flex-start;
-}
-
 .message__text {
   font-family: inherit;
-  align-self: flex-start;
-  margin: 10px 0;
-}
-
-.message__date {
-  align-self: flex-end;
 }
 
 .delete-message-window {
-  padding: 20px;
-}
-
-.delete-message-window > * {
-  margin-top: 10px;
-}
-
-.delete-message-window > *:first-child {
-  margin-top: 0;
+  padding: calc(var(--step) * 3);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--step) * 2);
+  border-radius: var(--radius-lg);
+  background-color: white;
 }
 
 .delete-message-window__buttons {
   display: flex;
   justify-content: space-evenly;
+}
+
+.message-card-footer {
+  justify-content: end;
+}
+
+.forward-message-card {
+  padding: calc(var(--step) * 2);
+}
+
+.forward-message-card-content {
+  padding: var(--step);
 }
 </style>

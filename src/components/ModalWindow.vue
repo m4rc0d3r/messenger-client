@@ -27,7 +27,7 @@ const emit = defineEmits({
 }
 
 .modal-window {
-  background-color: white;
+  background-color: transparent;
   max-width: 80%;
   max-height: 80%;
   margin: auto;

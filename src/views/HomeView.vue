@@ -57,7 +57,7 @@ const selectedChat = ref<TChat>();
 const userProfileVisibility = ref(false);
 const selectedUser = ref<TUser>();
 const userDataToFind = ref("");
-const foundUsers = ref<TUser[]>([]);
+const foundUsers = ref<TUser[] | null>(null);
 
 onMounted(async () => {
   const result = await chatStore.getChatsOfUser();
@@ -109,7 +109,7 @@ async function findUsers() {
       foundUsers.value = [];
     }
   } else {
-    foundUsers.value = [];
+    foundUsers.value = null;
   }
 }
 
@@ -122,7 +122,7 @@ async function createChat(chat: TCreateChat) {
   }
   userProfileVisibility.value = false;
   userDataToFind.value = "";
-  foundUsers.value = [];
+  foundUsers.value = null;
 }
 
 webSocketConnection.addEventListener("SendMessage", (e) => {
@@ -178,13 +178,7 @@ webSocketConnection.addEventListener("DeleteMessage", (e) => {
   align-items: stretch;
   padding: 8px;
   overflow: hidden;
-}
-
-.left-bar > * {
-  margin-top: 8px;
-}
-
-.left-bar > *:first-child {
-  margin-top: 0;
+  gap: calc(var(--step) * 2);
+  border-right: 1px solid var(--primary);
 }
 </style>

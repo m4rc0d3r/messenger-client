@@ -1,38 +1,62 @@
 <template>
-  <div>
-    <form ref="form" @submit.prevent class="form">
-      <div class="fields-to-fill">
-        <label for="email">Email</label>
-        <BaseInput v-model="user.email" type="email" id="email" required />
-        <label for="nickname">Nickname</label>
-        <BaseInput v-model="user.nickname" type="text" id="nickname" required />
-        <label for="password">Password</label>
-        <BaseInput
-          v-model="user.password"
-          type="password"
-          id="password"
-          required
-        />
-      </div>
-      <BaseButton @click="register">Register</BaseButton>
-      <div>
+  <div class="page">
+    <Card class="card">
+      <CardHeader class="card-header">
+        <CardTitle>Registration</CardTitle>
+        <CardDescription
+          >Create an account to be able to communicate with other
+          users.</CardDescription
+        >
+      </CardHeader>
+      <CardContent>
+        <form ref="form" @submit.prevent class="form">
+          <div class="form-fields">
+            <label for="email">Email</label>
+            <BaseInput v-model="user.email" type="email" id="email" required />
+            <label for="nickname">Nickname</label>
+            <BaseInput
+              v-model="user.nickname"
+              type="text"
+              id="nickname"
+              required
+            />
+            <label for="password">Password</label>
+            <BaseInput
+              v-model="user.password"
+              type="password"
+              id="password"
+              required
+            />
+          </div>
+          <BaseButton @click="register">Register</BaseButton>
+        </form>
+      </CardContent>
+      <CardFooter class="card-footer">
         <span
           >Do you already have an account?
           <RouterLink to="/login" class="link">Login</RouterLink></span
         >
-      </div>
-      <div class="error">{{ error }}</div>
-    </form>
+        <div class="error">{{ error }}</div>
+      </CardFooter>
+    </Card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import BaseButton from "@/components/BaseButton.vue";
 import BaseInput from "@/components/BaseInput.vue";
-import { useRouter } from "vue-router";
-import { useAuthStore } from "@/stores/auth-store";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/card";
 import type { TUserToRegister } from "@/schemas/user";
+import { useAuthStore } from "@/stores/auth-store";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -58,35 +82,41 @@ async function register() {
 </script>
 
 <style scoped>
+.page {
+  display: flex;
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.card {
+  margin: auto;
+}
+
+.card-header > * {
+  text-align: center;
+}
+
+.card-footer {
+  flex-direction: column;
+  gap: calc(var(--step) * 2);
+}
+
 .form {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: rgb(230, 222, 222);
-  padding: 20px;
+  gap: calc(var(--step) * 3);
 }
 
-form > * {
-  margin-top: 12px;
-}
-
-form > *:first-child {
-  margin-top: 0;
-}
-
-.fields-to-fill {
+.form-fields {
   display: grid;
   grid-template-columns: auto 1fr;
-  row-gap: 12px;
-  column-gap: 8px;
+  row-gap: calc(var(--step) * 3);
+  column-gap: calc(var(--step) * 2);
 }
 
 .error {
-  color: red;
+  color: var(--destructive);
 }
 
 .link {

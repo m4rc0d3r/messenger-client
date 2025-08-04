@@ -76,18 +76,18 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter, useRoute, RouterLink, RouterView } from "vue-router";
+import CurrentUserProfile from "@/components/CurrentUserProfile.vue";
+import ModalWindow from "@/components/ModalWindow.vue";
+import SimpleNotification from "@/components/SimpleNotification.vue";
+import { webSocketConnection } from "@/http/websocket";
 import { useAuthStore } from "@/stores/auth-store";
 import { useNotificationStore } from "@/stores/notification-store";
-import ModalWindow from "@/components/ModalWindow.vue";
-import CurrentUserProfile from "@/components/CurrentUserProfile.vue";
-import SimpleNotification from "@/components/SimpleNotification.vue";
-import GroupChatCreation from "./components/GroupChatCreation.vue";
-import { webSocketConnection } from "@/http/websocket";
 import { ref } from "vue";
-import { useChatStore } from "./stores/chat-store";
+import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
+import GroupChatCreation from "./components/GroupChatCreation.vue";
 import { ChatType } from "./schemas/chat";
 import { Notification, NotificationStatus } from "./schemas/notification";
+import { useChatStore } from "./stores/chat-store";
 
 const notificationStore = useNotificationStore();
 const notifications = notificationStore.notifications;
@@ -133,7 +133,8 @@ async function logout() {
 }
 
 .main-menu {
-  background-color: #369bb4;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
   display: flex;
   font-size: 1.75rem;
   justify-content: space-between;
@@ -147,6 +148,10 @@ async function logout() {
   box-sizing: border-box;
   margin-right: 10px;
   padding: 10px 15px;
+}
+
+.main-menu__item:hover {
+  text-decoration: underline;
 }
 
 .main-menu__item:last-child {

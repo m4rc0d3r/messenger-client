@@ -1,36 +1,54 @@
 <template>
-  <div>
-    <form ref="form" @submit.prevent class="form">
-      <div class="fields-to-fill">
-        <label for="email">Email</label>
-        <BaseInput v-model="user.email" type="email" id="email" required />
-        <label for="password">Password</label>
-        <BaseInput
-          v-model="user.password"
-          type="password"
-          id="password"
-          required
-        />
-      </div>
-      <BaseButton @click="login">Login</BaseButton>
-      <div>
+  <div class="page">
+    <Card class="card">
+      <CardHeader class="card-header">
+        <CardTitle>Login</CardTitle>
+        <CardDescription
+          >Log in to your account to access messages.</CardDescription
+        >
+      </CardHeader>
+      <CardContent>
+        <form ref="form" @submit.prevent class="form">
+          <div class="form-fields">
+            <label for="email">Email</label>
+            <BaseInput v-model="user.email" type="email" id="email" required />
+            <label for="password">Password</label>
+            <BaseInput
+              v-model="user.password"
+              type="password"
+              id="password"
+              required
+            />
+          </div>
+          <BaseButton @click="login">Login</BaseButton>
+        </form>
+      </CardContent>
+      <CardFooter class="card-footer">
         <span
           >Don't have an account?
           <RouterLink to="/register" class="link">Create</RouterLink></span
         >
-      </div>
-      <div class="error">{{ error }}</div>
-    </form>
+        <div class="error">{{ error }}</div>
+      </CardFooter>
+    </Card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import BaseButton from "@/components/BaseButton.vue";
 import BaseInput from "@/components/BaseInput.vue";
-import { useRouter, RouterLink } from "vue-router";
-import { useAuthStore } from "@/stores/auth-store";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/card";
 import type { TUserToLogin } from "@/schemas/user";
+import { useAuthStore } from "@/stores/auth-store";
+import { ref } from "vue";
+import { RouterLink, useRouter } from "vue-router";
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -55,35 +73,41 @@ async function login() {
 </script>
 
 <style scoped>
+.page {
+  display: flex;
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.card {
+  margin: auto;
+}
+
+.card-header > * {
+  text-align: center;
+}
+
+.card-footer {
+  flex-direction: column;
+  gap: calc(var(--step) * 2);
+}
+
 .form {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: rgb(230, 222, 222);
-  padding: 20px;
+  gap: calc(var(--step) * 3);
 }
 
-form > * {
-  margin-top: 12px;
-}
-
-form > *:first-child {
-  margin-top: 0;
-}
-
-.fields-to-fill {
+.form-fields {
   display: grid;
   grid-template-columns: auto 1fr;
-  row-gap: 12px;
-  column-gap: 8px;
+  row-gap: calc(var(--step) * 3);
+  column-gap: calc(var(--step) * 2);
 }
 
 .error {
-  color: red;
+  color: var(--destructive);
 }
 
 .link {
