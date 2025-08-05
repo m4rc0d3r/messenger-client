@@ -1,6 +1,3 @@
-import { ref, computed } from "vue";
-import { defineStore } from "pinia";
-import { ChatService } from "@/services/chat-service";
 import {
   type AddUserToChat,
   type AddUserToChatToServer,
@@ -8,8 +5,11 @@ import {
   type TCreateChat,
   type TCreateChatToServer,
 } from "@/schemas/chat";
-import { MessageService } from "@/services/message-service";
 import type { TMessage } from "@/schemas/message";
+import { ChatService } from "@/services/chat-service";
+import { MessageService } from "@/services/message-service";
+import { defineStore } from "pinia";
+import { computed, ref } from "vue";
 
 export const useChatStore = defineStore("chat", () => {
   const _chats = ref<TChat[]>([]);
@@ -26,28 +26,17 @@ export const useChatStore = defineStore("chat", () => {
     } else {
       _chats.value = result.map((chat) => {
         return {
-          id: chat.id_chat,
-          name: chat.name_chat,
-          type: chat.rk_type_chat,
-          link: chat.link,
+          ...chat,
           messages: result2
-            .filter((message) => message.rk_chat === chat.id_chat)
+            .filter((message) => message.chatId === chat.id)
             .map((message) => {
               return {
-                id: message.id_message,
-                text: message.text_message,
-                date: new Date(message.data_time),
-                senderId: message.rk_user,
-                chatId: message.rk_chat,
+                ...message,
+                date: new Date(message.createdAt),
+                senderId: message.authorId,
               };
             }),
-          users: chat.users.map((user) => {
-            return {
-              id: user.id_user,
-              email: user.email,
-              nickname: user.nickname,
-            };
-          }),
+          users: chat.participants,
         };
       });
 
@@ -56,11 +45,7 @@ export const useChatStore = defineStore("chat", () => {
   }
 
   async function createChat(chat: TCreateChat) {
-    const chatToServer = {
-      rk_type_chat: chat.type,
-      id_user: chat.interlocutorId,
-      name_chat: chat.name,
-    } as TCreateChatToServer;
+    const chatToServer = chat satisfies TCreateChatToServer;
 
     const result = await ChatService.createChat(chatToServer);
     if (result instanceof Error) {
@@ -71,10 +56,7 @@ export const useChatStore = defineStore("chat", () => {
   }
 
   async function addUserToChat(userToChat: AddUserToChat) {
-    const userToChatToServer = {
-      id_chat: userToChat.chatId,
-      id_user: userToChat.userId,
-    } as AddUserToChatToServer;
+    const userToChatToServer = userToChat satisfies AddUserToChatToServer;
 
     const result = await ChatService.addUserToChat(userToChatToServer);
     if (result instanceof Error) {
@@ -93,11 +75,9 @@ export const useChatStore = defineStore("chat", () => {
       if (chat) {
         chat.messages = result.map((message) => {
           return {
-            id: message.id_message,
-            text: message.text_message,
-            date: new Date(message.data_time),
-            senderId: message.rk_user,
-            chatId: message.rk_chat,
+            ...message,
+            date: new Date(message.createdAt),
+            senderId: message.authorId,
           };
         });
       }

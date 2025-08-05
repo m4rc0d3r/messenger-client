@@ -108,7 +108,7 @@ function hideUserProfile() {
 }
 
 async function createGroupChat(name: string) {
-  const result = useChatStore().createChat({ type: ChatType.POLYLOGUE, name });
+  const result = useChatStore().createChat({ type: ChatType.polylogue, name });
   if (result instanceof Error) {
     notificationStore.add(
       new Notification(NotificationStatus.FAILURE, result.message),

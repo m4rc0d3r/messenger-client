@@ -20,12 +20,7 @@ export const useAuthStore = defineStore("auth", () => {
     const result = await AuthService.register(user);
     if (!(result instanceof Error)) {
       _token.value = result.token;
-      _currentUser.value = {
-        id: result.id_user,
-        email: result.email,
-        nickname: result.nickname,
-        isPrivate: result.private_acc,
-      };
+      _currentUser.value = result;
     }
     return result;
   }
@@ -34,12 +29,7 @@ export const useAuthStore = defineStore("auth", () => {
     const result = await AuthService.login(user);
     if (!(result instanceof Error)) {
       _token.value = result.token;
-      _currentUser.value = {
-        id: result.id_user,
-        email: result.email,
-        nickname: result.nickname,
-        isPrivate: result.private_acc,
-      };
+      _currentUser.value = result;
     }
     return result;
   }
@@ -53,19 +43,11 @@ export const useAuthStore = defineStore("auth", () => {
 
   async function updateUserData(user: TUserToEdit) {
     const result = await AuthService.updateUserData({
-      email: user.email,
-      nickname: user.nickname,
-      password: user.password,
-      new_password: user.newPassword,
-      private_acc: user.isPrivate,
+      ...user,
+      currentPassword: user.password,
     });
     if (!(result instanceof Error)) {
-      _currentUser.value = {
-        id: result.id_user,
-        email: result.email,
-        nickname: result.nickname,
-        isPrivate: result.private_acc,
-      };
+      _currentUser.value = result;
     }
     return result;
   }

@@ -20,12 +20,7 @@ export const useUserStore = defineStore("user", () => {
         );
         return;
       } else {
-        _users.value.set(result.id_user, {
-          id: result.id_user,
-          email: result.email,
-          nickname: result.nickname,
-          isPrivate: result.private_acc,
-        });
+        _users.value.set(result.id, result);
       }
     }
 
@@ -44,12 +39,7 @@ export const useUserStore = defineStore("user", () => {
       );
       return result;
     } else {
-      return {
-        id: result.id_user,
-        email: result.email,
-        nickname: result.nickname,
-        isPrivate: result.private_acc,
-      } as TUser;
+      return result satisfies TUser;
     }
   }
 

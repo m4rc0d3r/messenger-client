@@ -66,18 +66,9 @@ class WebSocketConnection extends EventTarget {
         this.dispatchEvent(
           new CustomEvent<TChat>(messageEvent.type, {
             detail: {
-              id: chat.id_chat,
-              name: chat.name_chat,
-              type: chat.rk_type_chat,
-              link: chat.link,
+              ...chat,
               messages: [],
-              users: chat.users.map((user) => {
-                return {
-                  id: user.id_user,
-                  email: user.email,
-                  nickname: user.nickname,
-                };
-              }),
+              users: chat.participants,
             } as TChat,
           }),
         );
@@ -87,12 +78,7 @@ class WebSocketConnection extends EventTarget {
         const addedUser = messageEvent.data as IAddUserToChatDTO["data"];
         this.dispatchEvent(
           new CustomEvent<TAddedToChatUser>(messageEvent.type, {
-            detail: {
-              id: addedUser.id_user,
-              email: addedUser.email,
-              nickname: addedUser.nickname,
-              chatId: addedUser.id_chat,
-            } as TAddedToChatUser,
+            detail: addedUser satisfies TAddedToChatUser,
           }),
         );
         break;
@@ -102,11 +88,9 @@ class WebSocketConnection extends EventTarget {
         this.dispatchEvent(
           new CustomEvent<TMessage>(messageEvent.type, {
             detail: {
-              id: message.id_message,
-              text: message.text_message,
-              date: new Date(message.data_time),
-              senderId: message.rk_user,
-              chatId: message.rk_chat,
+              ...message,
+              date: new Date(message.createdAt),
+              senderId: message.authorId,
             } as TMessage,
           }),
         );
@@ -117,11 +101,9 @@ class WebSocketConnection extends EventTarget {
         this.dispatchEvent(
           new CustomEvent<TMessage>(messageEvent.type, {
             detail: {
-              id: message.id_message,
-              text: message.text_message,
-              date: new Date(message.data_time),
-              senderId: message.rk_user,
-              chatId: message.rk_chat,
+              ...message,
+              date: new Date(message.createdAt),
+              senderId: message.authorId,
             } as TMessage,
           }),
         );
@@ -132,12 +114,10 @@ class WebSocketConnection extends EventTarget {
         this.dispatchEvent(
           new CustomEvent<TMessage>(messageEvent.type, {
             detail: {
-              id: message.id_message,
-              text: message.text_message,
-              date: new Date(message.data_time),
-              senderId: message.rk_user,
-              chatId: message.rk_chat,
-            } as TMessage,
+              ...message,
+              date: new Date(message.createdAt),
+              senderId: message.authorId,
+            } satisfies TMessage,
           }),
         );
         break;

@@ -1,48 +1,43 @@
-import type { TChat, TChatFromServer } from "./chat";
+import type { TChat } from "./chat";
 
-export type TUserFromServer = {
-  id_user: number;
-  nickname: string;
-  email: string;
-  password?: string;
-  private_acc?: boolean;
-};
+type UserPassword = string;
 
 export type TUser = {
   id: number;
   nickname: string;
   email: string;
-  password?: string;
-  isPrivate?: boolean;
+  isPrivate: boolean;
 };
+
+export type TUserFromServer = TUser;
 
 export type TUserToEdit = {
   email?: TUser["email"];
   nickname?: TUser["nickname"];
-  password?: TUser["password"];
-  newPassword?: TUser["password"];
+  password?: UserPassword;
+  newPassword?: UserPassword;
   isPrivate?: TUser["isPrivate"];
 };
-
-export type TUserToEditToServer = {
-  email?: TUserFromServer["email"];
-  nickname?: TUserFromServer["nickname"];
-  password?: TUserFromServer["password"];
-  new_password?: TUserFromServer["password"];
-  private_acc?: TUserFromServer["private_acc"];
+export type TUserToEditToServer = Pick<
+  TUserToEdit,
+  "email" | "nickname" | "isPrivate"
+> & {
+  currentPassword?: UserPassword;
+  newPassword?: UserPassword;
 };
 
-export type TUserToRegister = Pick<TUser, "email" | "nickname" | "password">;
-export type TUserToLogin = Pick<TUser, "email" | "password">;
-
-export type TRegistrationAndLoginResponse = TUserFromServer & { token: string };
-
-export type TAddedToChatUserFromServer = Pick<
-  TUserFromServer,
-  "id_user" | "email" | "nickname"
-> &
-  Pick<TChatFromServer, "id_chat">;
-
-export type TAddedToChatUser = Pick<TUser, "id" | "email" | "nickname"> & {
-  chatId: TChat["id"];
+export type TUserToRegister = Pick<TUser, "email" | "nickname"> & {
+  password: UserPassword;
 };
+export type TUserToLogin = Omit<TUserToRegister, "nickname"> & {
+  password: UserPassword;
+};
+export type TRegistrationAndLoginResponse = TUserFromServer & {
+  token: string;
+};
+
+export type TAddedToChatUser = {
+  user: TUser;
+  chat: Pick<TChat, "id">;
+};
+export type TAddedToChatUserFromServer = TAddedToChatUser;

@@ -98,13 +98,7 @@ async function findUsers() {
       userDataToFind.value,
     );
     if (!(result instanceof Error)) {
-      foundUsers.value = result.map((user) => {
-        return {
-          id: user.id_user,
-          email: user.email,
-          nickname: user.nickname,
-        };
-      });
+      foundUsers.value = result;
     } else {
       foundUsers.value = [];
     }
@@ -140,16 +134,13 @@ webSocketConnection.addEventListener("CreateChat", async (e) => {
 });
 
 webSocketConnection.addEventListener("AddUserToChat", async (e) => {
-  const addedUser = (e as CustomEvent<TAddedToChatUser>).detail;
-  const chat = chatStore.chats.value.find(
-    (chat) => chat.id === addedUser.chatId,
-  );
+  const {
+    chat: { id: chatId },
+    user: addedUser,
+  } = (e as CustomEvent<TAddedToChatUser>).detail;
+  const chat = chatStore.chats.value.find((chat) => chat.id === chatId);
   if (chat && !chat.users.find((user) => user.id === addedUser.id)) {
-    chat.users.push({
-      id: addedUser.id,
-      email: addedUser.email,
-      nickname: addedUser.nickname,
-    });
+    chat.users.push(addedUser);
   }
 });
 

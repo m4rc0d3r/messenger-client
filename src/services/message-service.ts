@@ -1,6 +1,6 @@
-import { AxiosError, type AxiosResponse } from "axios";
-import { APIError } from "@/schemas/api-error";
 import { defaultAPI } from "@/http/axios/default-api";
+import { APIError } from "@/schemas/api-error";
+import type { TChat } from "@/schemas/chat";
 import type {
   TMessage,
   TMessageFromServer,
@@ -12,7 +12,7 @@ import type {
   TMessageToSend,
   TMessageToSendToServer,
 } from "@/schemas/message";
-import type { TChat } from "@/schemas/chat";
+import { AxiosError, type AxiosResponse } from "axios";
 
 export class MessageService {
   public static async getMessages() {
@@ -38,18 +38,13 @@ export class MessageService {
     try {
       const response = await defaultAPI.post<TMessageFromServer>(
         "messages/sendmessage",
-        {
-          text_message: message.text,
-          id_chat: message.chatId,
-        } as TMessageToSendToServer,
+        message satisfies TMessageToSendToServer,
       );
 
       return {
-        id: response.data.id_message,
-        text: response.data.text_message,
-        date: new Date(response.data.data_time),
-        senderId: response.data.rk_user,
-        chatId: response.data.rk_chat,
+        ...response.data,
+        date: new Date(response.data.createdAt),
+        senderId: response.data.authorId,
       } as TMessage;
     } catch (e) {
       if (e instanceof AxiosError && e.response) {
@@ -67,11 +62,7 @@ export class MessageService {
     try {
       const response = await defaultAPI.post<TMessageFromServer>(
         "messages/editmessage",
-        {
-          id_message: messageToEdit.id,
-          text_message: messageToEdit.text,
-          rk_chat: messageToEdit.chatId,
-        } as TMessageToEditToServer,
+        messageToEdit satisfies TMessageToEditToServer,
       );
 
       return response.data;
@@ -91,10 +82,7 @@ export class MessageService {
     try {
       const response = await defaultAPI.post<boolean>(
         "messages/deletemessage",
-        {
-          id_message: message.id,
-          rk_chat: message.chatId,
-        } as TMessageToDeleteToServer,
+        message satisfies TMessageToDeleteToServer,
       );
 
       return response.data;
@@ -115,9 +103,9 @@ export class MessageService {
       const response = await defaultAPI.post<boolean>(
         "messages/resendmessage",
         {
-          id_message: messageTorward.id,
-          rk_chat: chat.id,
-        } as TMessageToForwardToServer,
+          id: messageTorward.id,
+          chatId: chat.id,
+        } satisfies TMessageToForwardToServer,
       );
 
       return response.data;

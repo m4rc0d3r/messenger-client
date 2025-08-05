@@ -12,7 +12,7 @@
         v-if="!chatWithUserAlreadyExists"
         @click="
           emit('create-chat', {
-            type: ChatType.DIALOGUE,
+            type: ChatType.dialogue,
             interlocutorId: user.id,
           })
         "
@@ -51,7 +51,7 @@ onMounted(() => {
       return (
         chat.users.find((user) => {
           return user.id === props.user.id;
-        }) && chat.type === ChatType.DIALOGUE
+        }) && chat.type === ChatType.dialogue
       );
     }),
   );

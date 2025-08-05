@@ -1,45 +1,33 @@
 import type { TMessage } from "./message";
-import type { TUser, TUserFromServer } from "./user";
+import type { TUser } from "./user";
 
-export type TChatFromServer = {
-  id_chat: number;
-  name_chat: string;
-  rk_type_chat: number;
-  link: string;
-  users: TUserFromServer[];
-};
+export type ChatType = "dialogue" | "polylogue";
+export const ChatType = {
+  dialogue: "dialogue",
+  polylogue: "polylogue",
+} as const;
 
 export type TChat = {
   id: number;
-  name: string;
   type: ChatType;
+  name: string;
   link: string;
   messages: TMessage[];
   users: TUser[];
 };
-
-export enum ChatType {
-  DIALOGUE = 1,
-  POLYLOGUE,
-}
+export type TChatFromServer = Pick<TChat, "id" | "type" | "name" | "link"> & {
+  participants: TUser[];
+};
 
 export type TCreateChat = {
   type: TChat["type"];
   interlocutorId?: TUser["id"];
   name?: TChat["name"];
 };
-
-export type TCreateChatToServer = Pick<TChatFromServer, "rk_type_chat"> & {
-  id_user?: TUserFromServer["id_user"];
-  name_chat?: TChatFromServer["name_chat"];
-};
+export type TCreateChatToServer = TCreateChat;
 
 export type AddUserToChat = {
   chatId: TChat["id"];
   userId: TUser["id"];
 };
-
-export type AddUserToChatToServer = {
-  id_chat: TChatFromServer["id_chat"];
-  id_user: TUserFromServer["id_user"];
-};
+export type AddUserToChatToServer = AddUserToChat;

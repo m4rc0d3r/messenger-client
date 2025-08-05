@@ -33,7 +33,7 @@ export class UserService {
       const response = await defaultAPI.get<TUserFromServer[]>(
         `${
           useConfigStore(pinia).config.serverApp.httpUrl
-        }/users/finduser?user_data_to_find=${str}`,
+        }/users/finduser?emailOrNickname=${str}`,
       );
 
       return response.data;

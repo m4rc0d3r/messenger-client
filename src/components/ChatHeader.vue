@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <div v-if="chat.type === ChatType.DIALOGUE">
+    <div v-if="chat.type === ChatType.dialogue">
       <h3 @click="userProfileVisibility = true" class="chat-name">
         {{ interlocutor?.nickname }}
       </h3>
@@ -145,13 +145,7 @@ async function findUsers() {
       userDataToFind.value,
     );
     if (!(result instanceof Error)) {
-      foundUsers.value = result.map((user) => {
-        return {
-          id: user.id_user,
-          email: user.email,
-          nickname: user.nickname,
-        };
-      });
+      foundUsers.value = result;
     }
   } else {
     foundUsers.value = null;
@@ -174,7 +168,7 @@ async function addUserToChat(user: TUser) {
 }
 
 function getInterlocutor() {
-  if (props.chat.type === ChatType.DIALOGUE) {
+  if (props.chat.type === ChatType.dialogue) {
     interlocutor.value = props.chat.users.find((user) => {
       return user.id !== useAuthStore().currentUser.value?.id;
     });
