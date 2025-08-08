@@ -5,7 +5,7 @@
         :user-data-to-find="userDataToFind"
         :found-users="foundUsers"
         @update:user-data-to-find="
-          (value) => {
+          (value: string) => {
             userDataToFind = value;
             findUsers();
           }

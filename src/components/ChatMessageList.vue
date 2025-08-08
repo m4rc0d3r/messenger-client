@@ -5,7 +5,7 @@
       :key="message.id"
       :message="message"
       @enter-edit-mode="
-        (resetToViewMode) =>
+        (resetToViewMode: () => void) =>
           emit('enter-message-editing-mode', message, resetToViewMode)
       "
     />

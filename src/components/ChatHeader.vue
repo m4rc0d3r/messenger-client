@@ -15,7 +15,7 @@
       <BaseInput
         type="text"
         :modelValue="messageFilter"
-        @update:model-value="(value) => emit('update:messageFilter', value)"
+        @update:model-value="(value: string) => emit('update:messageFilter', value)"
         id="message-filter"
       />
     </div>
@@ -71,7 +71,7 @@
             :user-data-to-find="userDataToFind"
             :found-users="foundUsers"
             @update:user-data-to-find="
-              (value) => {
+              (value: string) => {
                 userDataToFind = value;
                 findUsers();
               }

@@ -65,7 +65,7 @@
           <ChatList
             :chats="chatStore.chats.value"
             :selected-chat="undefined"
-            @select="(chat) => forwardMessage(chat, message)"
+            @select="(chat: TChat) => forwardMessage(chat, message)"
           />
         </CardContent>
       </Card>

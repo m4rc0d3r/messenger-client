@@ -4,7 +4,7 @@
       :model-value="userDataToFind"
       placeholder="Enter an email or nickname"
       @update:model-value="
-        (value) => {
+        (value: string) => {
           emit('update:userDataToFind', value);
         }
       "

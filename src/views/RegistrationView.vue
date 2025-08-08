@@ -17,7 +17,7 @@
                 <button
                   type="button"
                   class="select-avatar-button"
-                  @click="avatarInput?.click()"
+                  @click="clickAvatarInput"
                 >
                   <img
                     v-if="user.avatar"
@@ -112,7 +112,7 @@ const AVATAR_FILE_CONSTRAINTS = {
     FileModule.MimeType.jpeg,
     FileModule.MimeType.png,
     FileModule.MimeType.svg,
-  ] as const satisfies FileModule.MimeType[],
+  ] satisfies FileModule.MimeType[],
 };
 
 const avatarInput = useTemplateRef("avatar-input");
@@ -132,10 +132,18 @@ function getAvatarSource() {
     : URL.createObjectURL(user.value.avatar);
 }
 
+function clickAvatarInput() {
+  (avatarInput.value as HTMLInputElement | null)?.click();
+}
+
 function clearAvatar() {
   user.value.avatar = null;
   if (avatarInput.value) {
-    avatarInput.value.value = Str.EMPTY;
+    (
+      avatarInput.value as {
+        value: string;
+      }
+    ).value = Str.EMPTY;
   }
 }
 
