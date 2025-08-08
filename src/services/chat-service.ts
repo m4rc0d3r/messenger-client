@@ -71,7 +71,7 @@ export class ChatService {
   public static async getAllMessagesFromChat(chatId: TChatFromServer["id"]) {
     try {
       const response = await defaultAPI.get<TMessageFromServer[]>(
-        `messages/getallmessagesfromchat?id_chat=${chatId}`,
+        `messages/getallmessagesfromchat?chatId=${chatId}`,
       );
 
       return response.data;

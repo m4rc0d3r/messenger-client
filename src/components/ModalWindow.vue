@@ -20,20 +20,14 @@ const emit = defineEmits({
 .modal-window-wrapper {
   background-color: #00000077;
   position: fixed;
-  top: 0%;
-  right: 0%;
-  bottom: 0%;
-  left: 0%;
+  inset: 0;
+  display: flex;
+  overflow: auto;
+  padding: calc(var(--step) * 8);
 }
 
 .modal-window {
   background-color: transparent;
-  max-width: 80%;
-  max-height: 80%;
   margin: auto;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
 }
 </style>

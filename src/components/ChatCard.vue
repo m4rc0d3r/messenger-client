@@ -1,5 +1,5 @@
 <template>
-  <li
+  <Card
     @click="emit('select')"
     :class="{
       'chat-card': true,
@@ -7,24 +7,27 @@
       'chat-card__no-selected': !selected,
     }"
   >
-    <img
-      v-if="chatCover"
-      :src="chatCover"
-      alt="Chat cover"
-      class="chat-cover"
-    />
-    <Users v-else class="empty-chat-cover" />
-    <div class="text-data">
-      <span>{{ chat.name }}</span>
-      <span v-if="chat.messages.length > 0"
-        >{{ sender?.nickname }}:
-        {{ chat.messages[chat.messages.length - 1].text }}</span
-      >
-    </div>
-  </li>
+    <CardContent class="card-content">
+      <img
+        v-if="chatCover"
+        :src="chatCover"
+        alt="Chat cover"
+        class="chat-cover"
+      />
+      <Users v-else class="empty-chat-cover" />
+      <div class="text-data">
+        <span>{{ chat.name }}</span>
+        <span v-if="chat.messages.length > 0"
+          >{{ sender?.nickname }}:
+          {{ chat.messages[chat.messages.length - 1].text }}</span
+        >
+      </div>
+    </CardContent>
+  </Card>
 </template>
 
 <script setup lang="ts">
+import { Card, CardContent } from "@/components/card";
 import { type TChat } from "@/schemas/chat";
 import type { TUser } from "@/schemas/user";
 import { useAuthStore } from "@/stores/auth-store";
@@ -78,9 +81,6 @@ async function updateSender() {
   border-radius: 8px;
   max-width: 100%;
   overflow: hidden;
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
 }
 
 .chat-card > * {
@@ -97,16 +97,25 @@ async function updateSender() {
   color: var(--primary-foreground);
 }
 
+.card-content {
+  padding: 0;
+  display: flex;
+  gap: calc(var(--step) * 4);
+  align-items: center;
+}
+
 .chat-cover {
   width: 1.5rem;
   height: 1.5rem;
   object-fit: cover;
   border-radius: 100%;
+  flex-shrink: 0;
 }
 
 .empty-chat-cover {
   width: 1.5rem;
   height: 1.5rem;
+  flex-shrink: 0;
 }
 
 .text-data {

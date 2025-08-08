@@ -33,7 +33,7 @@ export type TUserToRegister = Pick<TUser, "email" | "nickname"> & {
   password: UserPassword;
   avatar?: string | File | null | undefined;
 };
-export type TUserToLogin = Omit<TUserToRegister, "nickname"> & {
+export type TUserToLogin = Omit<TUserToRegister, "nickname" | "avatar"> & {
   password: UserPassword;
 };
 export type TRegistrationAndLoginResponse = TUserFromServer & {

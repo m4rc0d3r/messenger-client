@@ -1,13 +1,13 @@
 <template>
   <ul class="chat-list">
-    <ChatCard
-      v-for="chat in chats"
-      :key="chat.id"
-      :chat="chat"
-      :selected="chat === selectedChat"
-      class="chat-card"
-      @select="emit('select', chat)"
-    />
+    <li v-for="chat in chats" :key="chat.id">
+      <ChatCard
+        :chat="chat"
+        :selected="chat === selectedChat"
+        class="chat-card"
+        @select="emit('select', chat)"
+      />
+    </li>
   </ul>
 </template>
 

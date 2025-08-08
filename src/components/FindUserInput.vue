@@ -2,6 +2,7 @@
   <div class="find-user-block">
     <BaseInput
       :model-value="userDataToFind"
+      placeholder="Enter an email or nickname"
       @update:model-value="
         (value) => {
           emit('update:userDataToFind', value);
