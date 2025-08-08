@@ -7,19 +7,30 @@
       'chat-card__no-selected': !selected,
     }"
   >
-    <span>{{ chat.name }}</span>
-    <span v-if="chat.messages.length > 0"
-      >{{ sender?.nickname }}:
-      {{ chat.messages[chat.messages.length - 1].text }}</span
-    >
+    <img
+      v-if="chatCover"
+      :src="chatCover"
+      alt="Chat cover"
+      class="chat-cover"
+    />
+    <Users v-else class="empty-chat-cover" />
+    <div class="text-data">
+      <span>{{ chat.name }}</span>
+      <span v-if="chat.messages.length > 0"
+        >{{ sender?.nickname }}:
+        {{ chat.messages[chat.messages.length - 1].text }}</span
+      >
+    </div>
   </li>
 </template>
 
 <script setup lang="ts">
-import type { TChat } from "@/schemas/chat";
+import { type TChat } from "@/schemas/chat";
 import type { TUser } from "@/schemas/user";
+import { useAuthStore } from "@/stores/auth-store";
 import { useUserStore } from "@/stores/user-store";
-import { onMounted, onUpdated, ref } from "vue";
+import { Users } from "lucide-vue-next";
+import { computed, onMounted, onUpdated, ref } from "vue";
 
 const props = defineProps<{
   chat: TChat;
@@ -32,9 +43,17 @@ const emit = defineEmits({
   },
 });
 
+const authStore = useAuthStore();
 const userStore = useUserStore();
 
 const sender = ref<TUser>();
+
+const chatCover = computed(() => {
+  return props.chat.users.find(
+    ({ id }) =>
+      authStore.currentUser.value && id !== authStore.currentUser.value.id,
+  )?.avatar;
+});
 
 onMounted(async () => {
   await updateSender();
@@ -60,7 +79,8 @@ async function updateSender() {
   max-width: 100%;
   overflow: hidden;
   display: flex;
-  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
 }
 
 .chat-card > * {
@@ -75,5 +95,23 @@ async function updateSender() {
 .chat-card__selected {
   background-color: var(--primary);
   color: var(--primary-foreground);
+}
+
+.chat-cover {
+  width: 1.5rem;
+  height: 1.5rem;
+  object-fit: cover;
+  border-radius: 100%;
+}
+
+.empty-chat-cover {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.text-data {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 </style>

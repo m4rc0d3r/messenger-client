@@ -4,8 +4,19 @@
       <CardTitle>User profile</CardTitle>
     </CardHeader>
     <CardContent class="found-user-profile">
-      <span>Email: {{ user.email }}</span>
-      <span>Nickname: {{ user.nickname }}</span>
+      <div class="avatar-wrapper">
+        <img
+          v-if="user.avatar"
+          :src="user.avatar"
+          alt="Avatar"
+          class="avatar-image"
+        />
+        <User v-else class="empty-avatar-icon" />
+      </div>
+      <div class="text-data">
+        <span>Email: {{ user.email }}</span>
+        <span>Nickname: {{ user.nickname }}</span>
+      </div>
     </CardContent>
     <CardFooter class="card-footer">
       <BaseButton
@@ -24,6 +35,8 @@
 
 <script setup lang="ts">
 import BaseButton from "@/components/BaseButton.vue";
+import { User } from "lucide-vue-next";
+
 import {
   Card,
   CardContent,
@@ -68,6 +81,28 @@ onMounted(() => {
   flex-direction: column;
   padding: 12px;
   gap: calc(var(--step) * 3);
+}
+
+.avatar-wrapper {
+  place-self: center;
+}
+
+.avatar-image {
+  width: 6rem;
+  height: 6rem;
+  object-fit: cover;
+  border-radius: 100%;
+}
+
+.empty-avatar-icon {
+  width: 6rem;
+  height: 6rem;
+}
+
+.text-data {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .card-footer {

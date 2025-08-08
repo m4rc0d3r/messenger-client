@@ -21,7 +21,7 @@
           >Create chat</span
         >
       </div>
-      <div>
+      <div class="right-menu">
         <RouterLink
           v-if="!authStore.isLoggedIn"
           to="/register"
@@ -34,13 +34,22 @@
           class="main-menu__item"
           >Login</RouterLink
         >
-        <span
+        <div
           v-if="authStore.isLoggedIn"
           @click="showUserProfile"
-          class="main-menu__item"
+          class="main-menu__item me-section"
         >
-          {{ authStore.currentUser.value?.nickname }}</span
-        >
+          <img
+            v-if="authStore.currentUser.value?.avatar"
+            :src="authStore.currentUser.value?.avatar"
+            alt="My avatar"
+            class="me-section-image"
+          />
+          <User v-else class="me-section-icon" />
+          <span>
+            {{ authStore.currentUser.value?.nickname }}
+          </span>
+        </div>
         <span
           v-if="authStore.isLoggedIn"
           @click="logout"
@@ -82,6 +91,7 @@ import SimpleNotification from "@/components/SimpleNotification.vue";
 import { webSocketConnection } from "@/http/websocket";
 import { useAuthStore } from "@/stores/auth-store";
 import { useNotificationStore } from "@/stores/notification-store";
+import { User } from "lucide-vue-next";
 import { ref } from "vue";
 import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
 import GroupChatCreation from "./components/GroupChatCreation.vue";
@@ -156,6 +166,28 @@ async function logout() {
 
 .main-menu__item:last-child {
   margin-right: 0;
+}
+
+.right-menu {
+  display: flex;
+  align-items: center;
+}
+
+.me-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.me-section-image {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 100%;
+}
+
+.me-section-icon {
+  width: 2rem;
+  height: 2rem;
 }
 
 .notifications-wrapper {

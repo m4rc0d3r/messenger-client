@@ -9,6 +9,18 @@
     <CardContent>
       <form @submit.prevent class="form">
         <div class="form-fields">
+          <div class="avatar-form-field">
+            <label for="email">Avatar</label>
+            <div class="avatar-wrapper">
+              <img
+                v-if="userToEdit.avatar"
+                :src="userToEdit.avatar"
+                alt="Avatar"
+                class="avatar-image"
+              />
+              <User v-else class="empty-avatar-icon" />
+            </div>
+          </div>
           <label for="email-to-edit">Email</label>
           <span v-if="mode === Mode.VIEW"> {{ userToEdit.email }}</span>
           <BaseInput
@@ -77,8 +89,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/card";
-import type { TUserToEdit } from "@/schemas/user";
+import type { TUser, TUserToEdit } from "@/schemas/user";
+import { Str } from "@/shared";
 import { useAuthStore } from "@/stores/auth-store";
+import { User } from "lucide-vue-next";
 import { onMounted, ref } from "vue";
 import BaseButton from "./BaseButton.vue";
 import BaseInput from "./BaseInput.vue";
@@ -90,14 +104,15 @@ enum Mode {
 
 const authStore = useAuthStore();
 
-const userToEdit = ref<Required<TUserToEdit>>({
-  email: "",
-  nickname: "",
-  password: "",
-  newPassword: "",
+const userToEdit = ref<Required<TUserToEdit & Pick<TUser, "avatar">>>({
+  email: Str.EMPTY,
+  nickname: Str.EMPTY,
+  password: Str.EMPTY,
+  newPassword: Str.EMPTY,
   isPrivate: false,
+  avatar: Str.EMPTY,
 });
-const error = ref("");
+const error = ref(Str.EMPTY);
 
 onMounted(() => {
   resetToViewMode();
@@ -108,11 +123,12 @@ const mode = ref(Mode.VIEW);
 function enterEditMode() {
   mode.value = Mode.EDIT;
   userToEdit.value = {
-    email: authStore.currentUser.value?.email ?? "",
-    nickname: authStore.currentUser.value?.nickname ?? "",
-    password: "",
-    newPassword: "",
+    email: authStore.currentUser.value?.email ?? Str.EMPTY,
+    nickname: authStore.currentUser.value?.nickname ?? Str.EMPTY,
+    password: Str.EMPTY,
+    newPassword: Str.EMPTY,
     isPrivate: authStore.currentUser.value?.isPrivate ?? false,
+    avatar: authStore.currentUser.value?.avatar ?? Str.EMPTY,
   };
 }
 
@@ -129,13 +145,14 @@ async function updateUser() {
 function resetToViewMode() {
   mode.value = Mode.VIEW;
   userToEdit.value = {
-    email: authStore.currentUser.value?.email ?? "",
-    nickname: authStore.currentUser.value?.nickname ?? "",
-    password: "",
-    newPassword: "",
+    email: authStore.currentUser.value?.email ?? Str.EMPTY,
+    nickname: authStore.currentUser.value?.nickname ?? Str.EMPTY,
+    password: Str.EMPTY,
+    newPassword: Str.EMPTY,
     isPrivate: authStore.currentUser.value?.isPrivate ?? false,
+    avatar: authStore.currentUser.value?.avatar ?? Str.EMPTY,
   };
-  error.value = "";
+  error.value = Str.EMPTY;
 }
 </script>
 
@@ -159,6 +176,29 @@ function resetToViewMode() {
   grid-template-columns: auto 1fr;
   row-gap: calc(var(--step) * 3);
   column-gap: calc(var(--step) * 2);
+}
+
+.avatar-form-field {
+  grid-column: 1 / 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar-wrapper {
+  padding: 1rem;
+}
+
+.avatar-image {
+  width: 4.5rem;
+  height: 4.5rem;
+  object-fit: cover;
+  border-radius: 100%;
+}
+
+.empty-avatar-icon {
+  width: 4.5rem;
+  height: 4.5rem;
 }
 
 .button-block {

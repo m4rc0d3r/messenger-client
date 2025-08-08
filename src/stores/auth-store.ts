@@ -47,7 +47,11 @@ export const useAuthStore = defineStore("auth", () => {
       currentPassword: user.password,
     });
     if (!(result instanceof Error)) {
-      _currentUser.value = result;
+      console.log(_currentUser.value);
+      _currentUser.value = {
+        ...result,
+        avatar: _currentUser.value?.avatar ?? null,
+      };
     }
     return result;
   }
