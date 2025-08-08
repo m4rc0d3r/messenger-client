@@ -25,7 +25,10 @@ function createConfig(
     () =>
       zConfig.parse({
         ...Object.fromEntries(
-          Object.keys(zConfig.in.keyof().enum).map((key) => [key, variables]),
+          Object.keys(zConfig.innerType().keyof().Enum).map((key) => [
+            key,
+            variables,
+          ]),
         ),
         NODE_ENV: variables.NODE_ENV,
       }),
