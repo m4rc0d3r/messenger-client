@@ -1,10 +1,15 @@
-export type TMessage = {
-  id: number;
-  text: string;
-  date: Date;
-  senderId: number;
-  chatId: number;
-};
+import { z } from "zod";
+import { zUser } from "./user";
+
+export const zMessage = z.object({
+  id: z.number(),
+  text: z.string().nonempty(),
+  date: z.date(),
+  senderId: zUser.shape.id,
+  chatId: z.number(),
+});
+export type TMessage = z.infer<typeof zMessage>;
+
 export type TMessageFromServer = Omit<TMessage, "date" | "senderId"> & {
   createdAt: Date;
   authorId: number;

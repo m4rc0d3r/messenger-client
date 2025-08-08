@@ -1,21 +1,26 @@
-import type { TMessage } from "./message";
-import type { TUser } from "./user";
+import { z } from "zod";
+import { zMessage } from "./message";
+import { zUser, type TUser } from "./user";
 
-export type ChatType = "dialogue" | "polylogue";
-export const ChatType = {
-  dialogue: "dialogue",
-  polylogue: "polylogue",
-} as const;
+export const zChatType = z.enum(["dialogue", "polylogue"]);
+export const ChatType = zChatType.Enum;
+export type ChatType = z.infer<typeof zChatType>;
 
-export type TChat = {
-  id: number;
-  type: ChatType;
-  name: string;
-  link: string;
-  messages: TMessage[];
-  users: TUser[];
-};
-export type TChatFromServer = Pick<TChat, "id" | "type" | "name" | "link"> & {
+export const zChat = z.object({
+  id: z.number(),
+  type: zChatType,
+  name: z.string().nonempty(),
+  link: z.string().nonempty(),
+  authorId: zUser.shape.id,
+  messages: z.array(zMessage),
+  users: z.array(zUser),
+});
+export type TChat = z.infer<typeof zChat>;
+
+export type TChatFromServer = Pick<
+  TChat,
+  "id" | "type" | "name" | "link" | "authorId"
+> & {
   participants: TUser[];
 };
 

@@ -1,14 +1,16 @@
+import { z } from "zod";
 import type { TChat } from "./chat";
 
 type UserPassword = string;
 
-export type TUser = {
-  id: number;
-  nickname: string;
-  email: string;
-  isPrivate: boolean;
-  avatar: string | null;
-};
+export const zUser = z.object({
+  id: z.number(),
+  nickname: z.string().nonempty(),
+  email: z.string().email(),
+  isPrivate: z.boolean(),
+  avatar: z.string().nullable(),
+});
+export type TUser = z.infer<typeof zUser>;
 
 export type TUserFromServer = TUser;
 

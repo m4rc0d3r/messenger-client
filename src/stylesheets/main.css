@@ -8,7 +8,7 @@
   --primary: blue;
   --primary-foreground: oklch(0.985 0 0);
   --secondary: aqua;
-  --secondary-foreground: var(--primary-foreground);
+  --secondary-foreground: oklch(0.3211 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
   --accent: green;

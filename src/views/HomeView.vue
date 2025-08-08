@@ -29,6 +29,8 @@
 </template>
 
 <script setup lang="ts">
+import { ChatNotificationType } from "@/components/chat-notifications/chat-notification";
+import { useChatNotificationsStore } from "@/components/chat-notifications/store";
 import ChatArea from "@/components/ChatArea.vue";
 import ChatList from "@/components/ChatList.vue";
 import FindUserInput from "@/components/FindUserInput.vue";
@@ -52,6 +54,7 @@ const notificationStore = useNotificationStore();
 const authStore = useAuthStore();
 
 const chatStore = useChatStore();
+const chatNotificationsStore = useChatNotificationsStore();
 const chats = ref<TChat[]>([]);
 const selectedChat = ref<TChat>();
 const userProfileVisibility = ref(false);
@@ -124,6 +127,10 @@ webSocketConnection.addEventListener("SendMessage", (e) => {
   addMessageToChat(message.chatId, message);
   if (message.senderId !== authStore.currentUser.value?.id) {
     (document.getElementById("new-message-sound") as HTMLAudioElement).play();
+    chatNotificationsStore.add({
+      type: ChatNotificationType.NEW_MESSAGE,
+      payload: message,
+    });
   }
 });
 
@@ -131,6 +138,12 @@ webSocketConnection.addEventListener("CreateChat", async (e) => {
   const chat = (e as CustomEvent<TChat>).detail;
   chatStore.chats.value.push(chat);
   await chatStore.getAllMessagesFromChat(chat.id);
+  if (chat.authorId !== authStore.currentUser.value?.id) {
+    chatNotificationsStore.add({
+      type: ChatNotificationType.NEW_CHAT,
+      payload: chat,
+    });
+  }
 });
 
 webSocketConnection.addEventListener("AddUserToChat", async (e) => {
@@ -142,6 +155,13 @@ webSocketConnection.addEventListener("AddUserToChat", async (e) => {
   if (chat && !chat.users.find((user) => user.id === addedUser.id)) {
     chat.users.push(addedUser);
   }
+  chatNotificationsStore.add({
+    type: ChatNotificationType.NEW_CHAT_MEMBER,
+    payload: {
+      user: addedUser,
+      chat: { id: chatId },
+    },
+  });
 });
 
 webSocketConnection.addEventListener("EditMessage", (e) => {
