@@ -43,10 +43,11 @@ import type { TMessage } from "@/schemas/message";
 import { Notification, NotificationStatus } from "@/schemas/notification";
 import type { TAddedToChatUser, TUser } from "@/schemas/user";
 import { UserService } from "@/services/user-service";
+import { Str } from "@/shared";
 import { useAuthStore } from "@/stores/auth-store";
 import { useChatStore } from "@/stores/chat-store";
 import { useNotificationStore } from "@/stores/notification-store";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -79,6 +80,12 @@ onMounted(async () => {
       );
     }
     webSocketConnection.connect();
+  }
+});
+
+watchEffect(() => {
+  if (authStore.token.value === Str.EMPTY) {
+    router.push("/login");
   }
 });
 

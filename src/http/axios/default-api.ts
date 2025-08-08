@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 import { useConfigStore } from "@/config";
 import { useAuthStore } from "@/stores/auth-store";
@@ -14,3 +14,13 @@ defaultAPI.interceptors.request.use((config) => {
 
   return config;
 });
+
+defaultAPI.interceptors.response.use(
+  (value) => value,
+  (error) => {
+    if (error instanceof AxiosError && error.response?.status === 401) {
+      useAuthStore(pinia).logout();
+    }
+    throw error;
+  },
+);

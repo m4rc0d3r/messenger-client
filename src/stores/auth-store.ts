@@ -5,12 +5,24 @@ import type {
   TUserToRegister,
 } from "@/schemas/user";
 import { AuthService } from "@/services/auth-service";
+import { Str } from "@/shared";
+import { useStorage } from "@vueuse/core";
 import { defineStore } from "pinia";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 
 export const useAuthStore = defineStore("auth", () => {
-  const _token = ref("");
-  const _currentUser = ref<TUser | null>();
+  const _token = useStorage("_token", Str.EMPTY);
+  const _currentUser = useStorage<TUser | null>(
+    "_currentUser",
+    null,
+    undefined,
+    {
+      serializer: {
+        read: (raw) => (typeof raw === "string" ? JSON.parse(raw) : null),
+        write: (value) => JSON.stringify(value),
+      },
+    },
+  );
 
   const token = computed(() => _token);
   const isLoggedIn = computed(() => _token.value.length > 0);
