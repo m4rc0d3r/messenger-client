@@ -14,9 +14,17 @@ import axios, { AxiosError, type AxiosResponse } from "axios";
 export class AuthService {
   public static async register(user: TUserToRegister) {
     try {
-      const response = await axios.post<TRegistrationAndLoginResponse>(
+      const formData = new FormData();
+
+      for (const [key, value] of Object.entries(user)) {
+        if (value !== null) {
+          formData.set(key, value);
+        }
+      }
+
+      const response = await axios.postForm<TRegistrationAndLoginResponse>(
         `${useConfigStore(pinia).config.serverApp.httpUrl}/users/register`,
-        user,
+        formData,
       );
 
       return response.data;

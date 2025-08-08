@@ -7,6 +7,7 @@ export type TUser = {
   nickname: string;
   email: string;
   isPrivate: boolean;
+  avatar: string | null;
 };
 
 export type TUserFromServer = TUser;
@@ -28,6 +29,7 @@ export type TUserToEditToServer = Pick<
 
 export type TUserToRegister = Pick<TUser, "email" | "nickname"> & {
   password: UserPassword;
+  avatar?: string | File | null | undefined;
 };
 export type TUserToLogin = Omit<TUserToRegister, "nickname"> & {
   password: UserPassword;

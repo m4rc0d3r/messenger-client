@@ -11,6 +11,38 @@
       <CardContent>
         <form ref="form" @submit.prevent class="form">
           <div class="form-fields">
+            <div class="avatar-form-field">
+              <label for="email">Avatar</label>
+              <div class="avatar-wrapper">
+                <button
+                  type="button"
+                  class="select-avatar-button"
+                  @click="avatarInput?.click()"
+                >
+                  <img
+                    v-if="user.avatar"
+                    :src="getAvatarSource()"
+                    alt="Avatar"
+                    class="avatar-image"
+                  />
+                  <User v-else class="empty-avatar-icon" />
+                </button>
+                <button
+                  v-if="user.avatar"
+                  class="clear-avatar-button"
+                  @click="clearAvatar"
+                >
+                  <Trash />
+                </button>
+                <input
+                  ref="avatar-input"
+                  type="file"
+                  class="avatar-input"
+                  :accept="avatarInputAccept"
+                  @change="onAvatarInputChange"
+                />
+              </div>
+            </div>
             <label for="email">Email</label>
             <BaseInput v-model="user.email" type="email" id="email" required />
             <label for="nickname">Nickname</label>
@@ -54,8 +86,10 @@ import {
   CardTitle,
 } from "@/components/card";
 import type { TUserToRegister } from "@/schemas/user";
+import { File as FileModule, Str } from "@/shared";
 import { useAuthStore } from "@/stores/auth-store";
-import { ref } from "vue";
+import { Trash, User } from "lucide-vue-next";
+import { ref, useTemplateRef } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -63,11 +97,54 @@ const authStore = useAuthStore();
 
 const form = ref<HTMLFormElement>();
 const user = ref<Required<TUserToRegister>>({
-  nickname: "",
-  email: "",
-  password: "",
+  nickname: Str.EMPTY,
+  email: Str.EMPTY,
+  password: Str.EMPTY,
+  avatar: Str.EMPTY,
 });
-const error = ref("");
+const error = ref(Str.EMPTY);
+
+const AVATAR_KEY = "avatar";
+
+const AVATAR_FILE_CONSTRAINTS = {
+  mimeType: [
+    FileModule.MimeType.gif,
+    FileModule.MimeType.jpeg,
+    FileModule.MimeType.png,
+    FileModule.MimeType.svg,
+  ] as const satisfies FileModule.MimeType[],
+};
+
+const avatarInput = useTemplateRef("avatar-input");
+const avatarInputAccept = Object.values(AVATAR_FILE_CONSTRAINTS.mimeType).join(
+  Str.COMMA,
+);
+const ACCEPTABLE_AVATAR_EXTENSIONS = Object.values(
+  AVATAR_FILE_CONSTRAINTS.mimeType,
+)
+  .map((value) => FileModule.ExtensionByMimeType[value])
+  .join(Str.COMMA_WITH_SPACE)
+  .toLocaleUpperCase();
+
+function getAvatarSource() {
+  return typeof user.value.avatar === "string" || user.value.avatar === null
+    ? user.value.avatar ?? Str.EMPTY
+    : URL.createObjectURL(user.value.avatar);
+}
+
+function clearAvatar() {
+  user.value.avatar = null;
+  if (avatarInput.value) {
+    avatarInput.value.value = Str.EMPTY;
+  }
+}
+
+function onAvatarInputChange(event: Event) {
+  const file = (event.target as HTMLInputElement).files?.[0];
+  if (file) {
+    user.value.avatar = file;
+  }
+}
 
 async function register() {
   if (form.value?.checkValidity()) {
@@ -113,6 +190,61 @@ async function register() {
   grid-template-columns: auto 1fr;
   row-gap: calc(var(--step) * 3);
   column-gap: calc(var(--step) * 2);
+}
+
+.avatar-form-field {
+  grid-column: 1 / 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar-wrapper {
+  position: relative;
+  padding: 1rem;
+  place-self: center;
+}
+
+.select-avatar-button {
+  padding: 0.5rem;
+  border-radius: 100%;
+  border: none;
+}
+
+.avatar-image {
+  width: 4.5rem;
+  height: 4.5rem;
+  object-fit: cover;
+  border-radius: 100%;
+}
+
+.clear-avatar-button {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-radius: 100%;
+  color: var(--destructive-foreground);
+  background-color: var(--destructive);
+  border: none;
+  aspect-ratio: 1;
+}
+
+.clear-avatar-button > * {
+  margin: auto;
+}
+
+.avatar-wrapper:hover .clear-avatar-button {
+  display: inline-flex;
+}
+
+.avatar-input {
+  display: none;
+}
+
+.empty-avatar-icon {
+  width: 4.5rem;
+  height: 4.5rem;
 }
 
 .error {
