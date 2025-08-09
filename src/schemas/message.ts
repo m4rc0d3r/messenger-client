@@ -25,4 +25,6 @@ export type TMessageToDelete = Pick<TMessage, "id" | "chatId">;
 export type TMessageToDeleteToServer = TMessageToDelete;
 
 export type TMessageToForward = Pick<TMessage, "id" | "chatId">;
-export type TMessageToForwardToServer = TMessageToForward;
+export type TMessageToForwardToServer = Pick<TMessageToForward, "chatId"> & {
+  messageId: TMessage["id"];
+};

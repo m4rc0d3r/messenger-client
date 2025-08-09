@@ -24,12 +24,12 @@ const chatNotificationsStore = useChatNotificationsStore();
 <style scoped>
 .toast-wrapper {
   position: fixed;
-  top: 2rem;
   right: 2rem;
   bottom: 2rem;
   display: flex;
   flex-direction: column;
   justify-content: end;
+  max-height: calc(100vh - 4rem);
 }
 
 .notifications {

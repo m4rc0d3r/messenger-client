@@ -103,7 +103,7 @@ export class MessageService {
       const response = await defaultAPI.post<boolean>(
         "messages/resendmessage",
         {
-          id: messageTorward.id,
+          messageId: messageTorward.id,
           chatId: chat.id,
         } satisfies TMessageToForwardToServer,
       );
