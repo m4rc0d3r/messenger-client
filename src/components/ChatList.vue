@@ -1,11 +1,11 @@
 <template>
   <ul class="chat-list">
-    <li v-for="chat in chats" :key="chat.id">
+    <li v-for="(chat, index) in chats" :key="chat.id">
       <ChatCard
         :chat="chat"
-        :selected="chat === selectedChat"
+        :selected="index === selectedChatIndex"
         class="chat-card"
-        @select="emit('select', chat)"
+        @select="emit('select', index)"
       />
     </li>
   </ul>
@@ -17,11 +17,11 @@ import type { TChat } from "@/schemas/chat";
 
 defineProps<{
   chats: TChat[];
-  selectedChat?: TChat;
+  selectedChatIndex: number;
 }>();
 
 const emit = defineEmits<{
-  select: [chat: TChat];
+  select: [index: number];
 }>();
 </script>
 

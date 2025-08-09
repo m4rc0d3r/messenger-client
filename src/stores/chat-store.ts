@@ -116,10 +116,9 @@ export const useChatStore = defineStore("chat", () => {
   }
 
   function addMessageToChat(chatId: TChat["id"], message: TMessage) {
-    const chat = _chats.value.find((chat) => chat.id === chatId);
-    if (chat) {
-      chat.messages.push(message);
-    }
+    const index = _chats.value.findIndex((chat) => chat.id === chatId);
+    if (index === -1) return;
+    _chats.value[index].messages.push(message);
   }
 
   function editMessageInChat(messageToEdit: TMessage) {

@@ -18,11 +18,12 @@ import { useNotificationStore } from "@/stores/notification-store";
 import { pinia } from "@/stores/pinia";
 
 class WebSocketConnection extends EventTarget {
-  ws!: WebSocket;
+  ws: WebSocket | null;
   listeners: { type: string; callback: EventListenerOrEventListenerObject }[];
 
   constructor() {
     super();
+    this.ws = null;
     this.listeners = [];
   }
 
@@ -52,98 +53,100 @@ class WebSocketConnection extends EventTarget {
     this.ws.onmessage = (ev: MessageEvent<string>) => {
       const messageEvent = JSON.parse(ev.data) as IWebSocketDataDTO<unknown>;
       switch (messageEvent.type) {
-      case WebSocketDataType.Token: {
-        const token = messageEvent.data as ISendTokenDTO["data"];
-        this.dispatchEvent(
-          new CustomEvent<ISendTokenDTO["data"]>(messageEvent.type, {
-            detail: token,
-          }),
-        );
-        break;
-      }
-      case WebSocketDataType.CreateChat: {
-        const chat = messageEvent.data as ICreateChatDTO["data"];
-        this.dispatchEvent(
-          new CustomEvent<TChat>(messageEvent.type, {
-            detail: {
-              ...chat,
-              messages: [],
-              users: chat.participants,
-            } as TChat,
-          }),
-        );
-        break;
-      }
-      case WebSocketDataType.AddUserToChat: {
-        const addedUser = messageEvent.data as IAddUserToChatDTO["data"];
-        this.dispatchEvent(
-          new CustomEvent<TAddedToChatUser>(messageEvent.type, {
-            detail: addedUser satisfies TAddedToChatUser,
-          }),
-        );
-        break;
-      }
-      case WebSocketDataType.SendMessage: {
-        const message = messageEvent.data as ISendMessageDTO["data"];
-        this.dispatchEvent(
-          new CustomEvent<TMessage>(messageEvent.type, {
-            detail: {
-              ...message,
-              date: new Date(message.createdAt),
-              senderId: message.authorId,
-            } as TMessage,
-          }),
-        );
-        break;
-      }
-      case WebSocketDataType.EditMessage: {
-        const message = messageEvent.data as IEditMessageDTO["data"];
-        this.dispatchEvent(
-          new CustomEvent<TMessage>(messageEvent.type, {
-            detail: {
-              ...message,
-              date: new Date(message.createdAt),
-              senderId: message.authorId,
-            } as TMessage,
-          }),
-        );
-        break;
-      }
-      case WebSocketDataType.DeleteMessage: {
-        const message = messageEvent.data as IDeleteMessageDTO["data"];
-        this.dispatchEvent(
-          new CustomEvent<TMessage>(messageEvent.type, {
-            detail: {
-              ...message,
-              date: new Date(message.createdAt),
-              senderId: message.authorId,
-            } satisfies TMessage,
-          }),
-        );
-        break;
-      }
-      default:
-        useNotificationStore().add(
-          new Notification(
-            NotificationStatus.FAILURE,
-            "WebSocket received an unexpected message",
-          ),
-        );
+        case WebSocketDataType.Token: {
+          const token = messageEvent.data as ISendTokenDTO["data"];
+          this.dispatchEvent(
+            new CustomEvent<ISendTokenDTO["data"]>(messageEvent.type, {
+              detail: token,
+            }),
+          );
+          break;
+        }
+        case WebSocketDataType.CreateChat: {
+          const chat = messageEvent.data as ICreateChatDTO["data"];
+          this.dispatchEvent(
+            new CustomEvent<TChat>(messageEvent.type, {
+              detail: {
+                ...chat,
+                messages: [],
+                users: chat.participants,
+              } as TChat,
+            }),
+          );
+          break;
+        }
+        case WebSocketDataType.AddUserToChat: {
+          const addedUser = messageEvent.data as IAddUserToChatDTO["data"];
+          this.dispatchEvent(
+            new CustomEvent<TAddedToChatUser>(messageEvent.type, {
+              detail: addedUser satisfies TAddedToChatUser,
+            }),
+          );
+          break;
+        }
+        case WebSocketDataType.SendMessage: {
+          const message = messageEvent.data as ISendMessageDTO["data"];
+          this.dispatchEvent(
+            new CustomEvent<TMessage>(messageEvent.type, {
+              detail: {
+                ...message,
+                date: new Date(message.createdAt),
+                senderId: message.authorId,
+              } as TMessage,
+            }),
+          );
+          break;
+        }
+        case WebSocketDataType.EditMessage: {
+          const message = messageEvent.data as IEditMessageDTO["data"];
+          this.dispatchEvent(
+            new CustomEvent<TMessage>(messageEvent.type, {
+              detail: {
+                ...message,
+                date: new Date(message.createdAt),
+                senderId: message.authorId,
+              } as TMessage,
+            }),
+          );
+          break;
+        }
+        case WebSocketDataType.DeleteMessage: {
+          const message = messageEvent.data as IDeleteMessageDTO["data"];
+          this.dispatchEvent(
+            new CustomEvent<TMessage>(messageEvent.type, {
+              detail: {
+                ...message,
+                date: new Date(message.createdAt),
+                senderId: message.authorId,
+              } satisfies TMessage,
+            }),
+          );
+          break;
+        }
+        default:
+          useNotificationStore().add(
+            new Notification(
+              NotificationStatus.FAILURE,
+              "WebSocket received an unexpected message",
+            ),
+          );
       }
       console.log("New message:", messageEvent);
     };
   }
 
   get status() {
-    return this.ws.readyState;
+    return this.ws?.readyState ?? WebSocket.CLOSED;
   }
 
   send<T>(data: T) {
-    this.ws.send(JSON.stringify(data));
+    this.ws?.send(JSON.stringify(data));
   }
 
-  close(...args: Parameters<typeof this.ws.close>) {
-    this.ws.close(...args);
+  close(...args: Parameters<NonNullable<typeof this.ws>["close"]>) {
+    if (this.ws) {
+      this.ws.close(...args);
+    }
   }
 
   addEventListener(

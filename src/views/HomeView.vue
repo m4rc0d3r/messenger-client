@@ -13,12 +13,15 @@
         @click-on-user="showUserProfile"
       />
       <ChatList
-        :chats="chats"
-        :selected-chat="selectedChat"
+        :chats="chatStore.chats.value"
+        :selected-chat-index="selectedChatIndex"
         @select="selectChat"
       />
     </div>
-    <ChatArea :chat="selectedChat" @send-message="addMessageToChat" />
+    <ChatArea
+      :chat="chatStore.chats.value[selectedChatIndex]"
+      @send-message="addMessageToChat"
+    />
     <ModalWindow
       v-if="userProfileVisibility && selectedUser"
       @close="userProfileVisibility = false"
@@ -43,11 +46,10 @@ import type { TMessage } from "@/schemas/message";
 import { Notification, NotificationStatus } from "@/schemas/notification";
 import type { TAddedToChatUser, TUser } from "@/schemas/user";
 import { UserService } from "@/services/user-service";
-import { Str } from "@/shared";
 import { useAuthStore } from "@/stores/auth-store";
 import { useChatStore } from "@/stores/chat-store";
 import { useNotificationStore } from "@/stores/notification-store";
-import { onMounted, ref, watchEffect } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -56,8 +58,7 @@ const authStore = useAuthStore();
 
 const chatStore = useChatStore();
 const chatNotificationsStore = useChatNotificationsStore();
-const chats = ref<TChat[]>([]);
-const selectedChat = ref<TChat>();
+const selectedChatIndex = ref(-1);
 const userProfileVisibility = ref(false);
 const selectedUser = ref<TUser>();
 const userDataToFind = ref("");
@@ -73,8 +74,7 @@ onMounted(async () => {
     }
     router.push("/login");
   } else {
-    chats.value = chatStore.chats.value;
-    if (chats.value.length === 0) {
+    if (chatStore.chats.value.length === 0) {
       notificationStore.add(
         new Notification(NotificationStatus.SUCCESS, "You don't have chats"),
       );
@@ -83,14 +83,8 @@ onMounted(async () => {
   }
 });
 
-watchEffect(() => {
-  if (authStore.token.value === Str.EMPTY) {
-    router.push("/login");
-  }
-});
-
-function selectChat(chat: TChat) {
-  selectedChat.value = chat;
+function selectChat(index: number) {
+  selectedChatIndex.value = index;
 }
 
 function addMessageToChat(chatId: TChat["id"], message: TMessage) {

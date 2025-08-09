@@ -94,11 +94,12 @@ import { webSocketConnection } from "@/http/websocket";
 import { useAuthStore } from "@/stores/auth-store";
 import { useNotificationStore } from "@/stores/notification-store";
 import { User } from "lucide-vue-next";
-import { ref } from "vue";
+import { ref, watchEffect } from "vue";
 import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
 import GroupChatCreation from "./components/GroupChatCreation.vue";
 import { ChatType } from "./schemas/chat";
 import { Notification, NotificationStatus } from "./schemas/notification";
+import { Str } from "./shared";
 import { useChatStore } from "./stores/chat-store";
 
 const notificationStore = useNotificationStore();
@@ -135,6 +136,12 @@ async function logout() {
   webSocketConnection.removeAllListeners();
   router.push("/login");
 }
+
+watchEffect(() => {
+  if (authStore.token.value === Str.EMPTY) {
+    logout();
+  }
+});
 </script>
 
 <style scoped>
