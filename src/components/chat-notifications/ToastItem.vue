@@ -7,6 +7,7 @@ import {
   CardTitle,
 } from "@/components/card";
 import { ChatType } from "@/schemas/chat";
+import { MESSAGE_DISCRIMINATOR, MessageOriginType } from "@/schemas/message";
 import { Str } from "@/shared";
 import { useAuthStore } from "@/stores/auth-store";
 import { useChatStore } from "@/stores/chat-store";
@@ -46,48 +47,58 @@ const content = computedAsync(async () => {
   const errorText = "Failed to retrieve required data.";
   const notification = props.notification;
   switch (notification[DISCRIMINATOR]) {
-  case ChatNotificationType.NEW_CHAT: {
-    return notification.payload.type === ChatType.dialogue
-      ? `User "${
-        notification.payload.users.find(
-          ({ id }) => id !== authStore.currentUser.value?.id,
-        )?.nickname
-      }" has created a personal chat with you.`
-      : `You have been added to the "${notification.payload.name}" group chat.`;
-  }
-  case ChatNotificationType.NEW_CHAT_MEMBER: {
-    const chats = await chatStore.getChatsOfUser();
-    if (chats instanceof Error) return errorText;
+    case ChatNotificationType.NEW_CHAT: {
+      return notification.payload.type === ChatType.dialogue
+        ? `User "${
+            notification.payload.users.find(
+              ({ id }) => id !== authStore.currentUser.value?.id,
+            )?.nickname
+          }" has created a personal chat with you.`
+        : `You have been added to the "${notification.payload.name}" group chat.`;
+    }
+    case ChatNotificationType.NEW_CHAT_MEMBER: {
+      const chats = await chatStore.getChatsOfUser();
+      if (chats instanceof Error) return errorText;
 
-    const chatName = chats.value.find(
-      ({ id }) => id === notification.payload.chat.id,
-    )?.name;
-    return [
-      "User ",
-      notification.payload.user.nickname,
-      " has been added to the group chat ",
-      chatName,
-      Str.PERIOD,
-    ].join(Str.EMPTY);
-  }
-  case ChatNotificationType.NEW_MESSAGE: {
-    const chats = await chatStore.getChatsOfUser();
-    if (chats instanceof Error) return errorText;
+      const chatName = chats.value.find(
+        ({ id }) => id === notification.payload.chat.id,
+      )?.name;
+      return [
+        "User ",
+        notification.payload.user.nickname,
+        " has been added to the group chat ",
+        chatName,
+        Str.PERIOD,
+      ].join(Str.EMPTY);
+    }
+    case ChatNotificationType.NEW_MESSAGE: {
+      const chats = await chatStore.getChatsOfUser();
+      if (chats instanceof Error) return errorText;
 
-    const chat = chats.value.find(
-      ({ id }) => id === notification.payload.chatId,
-    );
-    if (!chat) return errorText;
+      const chat = chats.value.find(
+        ({ id }) => id === notification.payload.chatId,
+      );
+      if (!chat) return errorText;
 
-    const senderNickname = (
-      await userStore.getUserById(notification.payload.senderId)
-    )?.nickname;
-    if (!senderNickname) return errorText;
+      const senderNickname = (
+        await userStore.getUserById(notification.payload.senderId)
+      )?.nickname;
+      if (!senderNickname) return errorText;
 
-    return chat.type === ChatType.dialogue
-      ? `User "${senderNickname}" sent you a message in private chat.`
-      : `User "${senderNickname}" sent a message to the chat "${chat.name}".`;
-  }
+      return chat.type === ChatType.dialogue
+        ? `User "${senderNickname}" ${
+            notification.payload[MESSAGE_DISCRIMINATOR] ===
+            MessageOriginType.original
+              ? "sent"
+              : "forwarded"
+          } you a message in private chat.`
+        : `User "${senderNickname}" ${
+            notification.payload[MESSAGE_DISCRIMINATOR] ===
+            MessageOriginType.original
+              ? "sent"
+              : "forwarded"
+          } a message to the chat "${chat.name}".`;
+    }
   }
 });
 </script>
