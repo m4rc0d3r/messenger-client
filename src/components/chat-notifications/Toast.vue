@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ChatNotificationToastItem from "./ChatNotificationToastItem.vue";
+import ChatNotificationToastItem from "./ToastItem.vue";
 import { useChatNotificationsStore } from "./store";
 
 const chatNotificationsStore = useChatNotificationsStore();

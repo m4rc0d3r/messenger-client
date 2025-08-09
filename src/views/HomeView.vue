@@ -32,8 +32,10 @@
 </template>
 
 <script setup lang="ts">
-import { ChatNotificationType } from "@/components/chat-notifications/chat-notification";
-import { useChatNotificationsStore } from "@/components/chat-notifications/store";
+import {
+  ChatNotificationType,
+  useChatNotificationsStore,
+} from "@/components/chat-notifications";
 import ChatArea from "@/components/ChatArea.vue";
 import ChatList from "@/components/ChatList.vue";
 import FindUserInput from "@/components/FindUserInput.vue";

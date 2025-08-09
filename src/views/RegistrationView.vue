@@ -42,6 +42,7 @@
                   @change="onAvatarInputChange"
                 />
               </div>
+              <p>Allowed extensions: {{ ACCEPTABLE_AVATAR_EXTENSIONS }}</p>
             </div>
             <label for="email">Email</label>
             <BaseInput v-model="user.email" type="email" id="email" required />
@@ -103,8 +104,6 @@ const user = ref<Required<TUserToRegister>>({
   avatar: Str.EMPTY,
 });
 const error = ref(Str.EMPTY);
-
-const AVATAR_KEY = "avatar";
 
 const AVATAR_FILE_CONSTRAINTS = {
   mimeType: [

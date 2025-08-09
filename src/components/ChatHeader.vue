@@ -15,7 +15,9 @@
       <BaseInput
         type="text"
         :modelValue="messageFilter"
-        @update:model-value="(value: string) => emit('update:messageFilter', value)"
+        @update:model-value="
+          (value: string) => emit('update:messageFilter', value)
+        "
         id="message-filter"
       />
     </div>

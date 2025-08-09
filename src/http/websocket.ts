@@ -46,83 +46,83 @@ class WebSocketConnection extends EventTarget {
     this.ws.onmessage = (ev: MessageEvent<string>) => {
       const messageEvent = JSON.parse(ev.data) as IWebSocketDataDTO<unknown>;
       switch (messageEvent.type) {
-        case WebSocketDataType.Token: {
-          const token = messageEvent.data as ISendTokenDTO["data"];
-          this.dispatchEvent(
-            new CustomEvent<ISendTokenDTO["data"]>(messageEvent.type, {
-              detail: token,
-            }),
-          );
-          break;
-        }
-        case WebSocketDataType.CreateChat: {
-          const chat = messageEvent.data as ICreateChatDTO["data"];
-          this.dispatchEvent(
-            new CustomEvent<TChat>(messageEvent.type, {
-              detail: {
-                ...chat,
-                messages: [],
-                users: chat.participants,
-              } as TChat,
-            }),
-          );
-          break;
-        }
-        case WebSocketDataType.AddUserToChat: {
-          const addedUser = messageEvent.data as IAddUserToChatDTO["data"];
-          this.dispatchEvent(
-            new CustomEvent<TAddedToChatUser>(messageEvent.type, {
-              detail: addedUser satisfies TAddedToChatUser,
-            }),
-          );
-          break;
-        }
-        case WebSocketDataType.SendMessage: {
-          const message = messageEvent.data as ISendMessageDTO["data"];
-          this.dispatchEvent(
-            new CustomEvent<TMessage>(messageEvent.type, {
-              detail: {
-                ...message,
-                date: new Date(message.createdAt),
-                senderId: message.authorId,
-              } as TMessage,
-            }),
-          );
-          break;
-        }
-        case WebSocketDataType.EditMessage: {
-          const message = messageEvent.data as IEditMessageDTO["data"];
-          this.dispatchEvent(
-            new CustomEvent<TMessage>(messageEvent.type, {
-              detail: {
-                ...message,
-                date: new Date(message.createdAt),
-                senderId: message.authorId,
-              } as TMessage,
-            }),
-          );
-          break;
-        }
-        case WebSocketDataType.DeleteMessage: {
-          const message = messageEvent.data as IDeleteMessageDTO["data"];
-          this.dispatchEvent(
-            new CustomEvent<TMessage>(messageEvent.type, {
-              detail: {
-                ...message,
-                date: new Date(message.createdAt),
-                senderId: message.authorId,
-              } satisfies TMessage,
-            }),
-          );
-          break;
-        }
-        default:
-          useNotificationStore().add(
-            new Notification(
-              NotificationStatus.FAILURE,
-              "WebSocket received an unexpected message",
-            ),
-          );
+      case WebSocketDataType.Token: {
+        const token = messageEvent.data as ISendTokenDTO["data"];
+        this.dispatchEvent(
+          new CustomEvent<ISendTokenDTO["data"]>(messageEvent.type, {
+            detail: token,
+          }),
+        );
+        break;
+      }
+      case WebSocketDataType.CreateChat: {
+        const chat = messageEvent.data as ICreateChatDTO["data"];
+        this.dispatchEvent(
+          new CustomEvent<TChat>(messageEvent.type, {
+            detail: {
+              ...chat,
+              messages: [],
+              users: chat.participants,
+            } as TChat,
+          }),
+        );
+        break;
+      }
+      case WebSocketDataType.AddUserToChat: {
+        const addedUser = messageEvent.data as IAddUserToChatDTO["data"];
+        this.dispatchEvent(
+          new CustomEvent<TAddedToChatUser>(messageEvent.type, {
+            detail: addedUser satisfies TAddedToChatUser,
+          }),
+        );
+        break;
+      }
+      case WebSocketDataType.SendMessage: {
+        const message = messageEvent.data as ISendMessageDTO["data"];
+        this.dispatchEvent(
+          new CustomEvent<TMessage>(messageEvent.type, {
+            detail: {
+              ...message,
+              date: new Date(message.createdAt),
+              senderId: message.authorId,
+            } as TMessage,
+          }),
+        );
+        break;
+      }
+      case WebSocketDataType.EditMessage: {
+        const message = messageEvent.data as IEditMessageDTO["data"];
+        this.dispatchEvent(
+          new CustomEvent<TMessage>(messageEvent.type, {
+            detail: {
+              ...message,
+              date: new Date(message.createdAt),
+              senderId: message.authorId,
+            } as TMessage,
+          }),
+        );
+        break;
+      }
+      case WebSocketDataType.DeleteMessage: {
+        const message = messageEvent.data as IDeleteMessageDTO["data"];
+        this.dispatchEvent(
+          new CustomEvent<TMessage>(messageEvent.type, {
+            detail: {
+              ...message,
+              date: new Date(message.createdAt),
+              senderId: message.authorId,
+            } satisfies TMessage,
+          }),
+        );
+        break;
+      }
+      default:
+        useNotificationStore().add(
+          new Notification(
+            NotificationStatus.FAILURE,
+            "WebSocket received an unexpected message",
+          ),
+        );
       }
     };
   }

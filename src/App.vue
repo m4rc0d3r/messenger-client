@@ -86,7 +86,7 @@
 </template>
 
 <script setup lang="ts">
-import ChatNotificationToast from "@/components/chat-notifications/ChatNotificationToast.vue";
+import ChatNotificationToast from "@/components/chat-notifications/Toast.vue";
 import CurrentUserProfile from "@/components/CurrentUserProfile.vue";
 import ModalWindow from "@/components/ModalWindow.vue";
 import SimpleNotification from "@/components/SimpleNotification.vue";
