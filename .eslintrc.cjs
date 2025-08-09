@@ -23,7 +23,7 @@ module.exports = {
     "vue/multi-word-component-names": [
       "error",
       {
-        ignores: ["Card", "Toast"],
+        ignores: ["Card", "Popover", "Toast"],
       },
     ],
   },

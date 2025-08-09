@@ -13,34 +13,85 @@
         'message-card': true,
       }"
     >
-      <CardHeader>
+      <CardHeader class="message-card-header">
         <CardTitle>{{ sender?.nickname }}</CardTitle>
         <CardDescription v-if="forwardedBy">
           Forwarded by {{ forwardedBy.nickname }}
         </CardDescription>
         <CardAction class="message-card-action">
-          <button @click="tryToForwardMessage(message)">Forward</button>
           <button
-            v-if="
-              authStore.currentUser.value?.id === message.senderId &&
-              !isEditedNow
-            "
-            @click="enterEditMode"
+            ref="menuBtn"
+            @click="isMenuOpen = !isMenuOpen"
+            class="menu-btn"
           >
-            Edit
+            <EllipsisVertical />
           </button>
-          <button
-            v-if="
-              authStore.currentUser.value?.id === message.senderId &&
-              !isEditedNow
+          <Popover
+            v-model="isMenuOpen"
+            :anchor="menuBtn"
+            :placement="
+              authStore.currentUser.value?.id === message.senderId
+                ? 'left'
+                : 'bottom'
             "
-            @click="deleteMessageWindowVisibility = true"
+            class="message-card-action-popover"
           >
-            Delete
-          </button>
+            <template #default>
+              <ul class="message-card-action-list">
+                <li>
+                  <button
+                    @click="
+                      () => {
+                        isMenuOpen = false;
+                        tryToForwardMessage(message);
+                      }
+                    "
+                  >
+                    Forward
+                  </button>
+                </li>
+                <li
+                  v-if="
+                    message[MESSAGE_DISCRIMINATOR] ===
+                      MessageOriginType.original &&
+                    authStore.currentUser.value?.id === message.senderId &&
+                    !isEditedNow
+                  "
+                >
+                  <button
+                    @click="
+                      () => {
+                        isMenuOpen = false;
+                        enterEditMode();
+                      }
+                    "
+                  >
+                    Edit
+                  </button>
+                </li>
+                <li
+                  v-if="
+                    authStore.currentUser.value?.id === message.senderId &&
+                    !isEditedNow
+                  "
+                >
+                  <button
+                    @click="
+                      () => {
+                        isMenuOpen = false;
+                        deleteMessageWindowVisibility = true;
+                      }
+                    "
+                  >
+                    Delete
+                  </button>
+                </li>
+              </ul>
+            </template>
+          </Popover>
         </CardAction>
       </CardHeader>
-      <CardContent>
+      <CardContent class="message-card-content">
         <pre class="message__text">{{ messageText }}</pre>
       </CardContent>
       <CardFooter class="message-card-footer">
@@ -106,6 +157,7 @@ import {
 } from "@/components/card";
 import ChatList from "@/components/ChatList.vue";
 import ModalWindow from "@/components/ModalWindow.vue";
+import Popover from "@/components/Popover.vue";
 import type { TChat } from "@/schemas/chat";
 import {
   MESSAGE_DISCRIMINATOR,
@@ -120,6 +172,7 @@ import { useChatStore } from "@/stores/chat-store";
 import { useMessageStore } from "@/stores/message-store";
 import { useNotificationStore } from "@/stores/notification-store";
 import { useUserStore } from "@/stores/user-store";
+import { EllipsisVertical } from "lucide-vue-next";
 import { computed, onMounted, ref } from "vue";
 
 const authStore = useAuthStore();
@@ -143,6 +196,9 @@ const deleteMessageWindowVisibility = ref(false);
 
 const forwardedBy = ref<TUser>();
 const originalMessage = ref<OriginalMessage>();
+
+const isMenuOpen = ref(false);
+const menuBtn = ref<HTMLElement | null>(null);
 
 onMounted(async () => {
   if (props.message[MESSAGE_DISCRIMINATOR] === MessageOriginType.original) {
@@ -228,15 +284,54 @@ async function tryToForwardMessage(message: TMessage) {
   padding: calc(var(--step) * 2);
 }
 
+.message-card-header,
+.message-card-content,
+.message-card-footer {
+  padding: 0;
+}
+
 .message-card-action > * {
   color: var(--primary);
   background-color: transparent;
   border: none;
 }
 
-.message-card-action > *:hover {
-  text-decoration: underline;
-  cursor: pointer;
+.menu-btn {
+  border-radius: 100%;
+  aspect-ratio: 1;
+}
+
+.menu-btn:hover {
+  background-color: lightgray;
+}
+
+.message-card-action-popover {
+  background-color: var(--background);
+}
+
+.message-card-action-list {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--step) * 2);
+  background-color: var(--background);
+}
+
+.message-card-action-list > li {
+  display: flex;
+  border-radius: var(--radius-lg);
+}
+
+.message-card-action-list > li:hover {
+  background-color: aqua;
+}
+
+.message-card-action-list > li > button {
+  border: none;
+  background-color: transparent;
+  color: var(--primary);
+  width: 100%;
+  text-align: left;
+  font-size: 1rem;
 }
 
 .message__text {

@@ -91,7 +91,7 @@ const content = computedAsync(async () => {
             MessageOriginType.original
               ? "sent"
               : "forwarded"
-          } you a message in private chat.`
+          } you a message in personal chat.`
         : `User "${senderNickname}" ${
             notification.payload[MESSAGE_DISCRIMINATOR] ===
             MessageOriginType.original
