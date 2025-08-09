@@ -29,7 +29,6 @@ export const useUserStore = defineStore("user", () => {
 
   async function getUserByIdFromServer(id: TUser["id"]) {
     const result = await UserService.getUserById(id);
-    console.log("User from server:", result);
     if (result instanceof Error) {
       useNotificationStore().add(
         new Notification(

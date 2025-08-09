@@ -37,17 +37,10 @@ class WebSocketConnection extends EventTarget {
     );
 
     this.ws.onopen = () => {
-      console.log("WebSocket connection established");
       this.send({
         type: WebSocketDataType.Token,
         data: useAuthStore(pinia).token.value,
       } as ISendTokenDTO);
-    };
-
-    this.ws.onerror = () => {
-      console.log(
-        "An error occurred while establishing a WebSocket connection",
-      );
     };
 
     this.ws.onmessage = (ev: MessageEvent<string>) => {
@@ -131,7 +124,6 @@ class WebSocketConnection extends EventTarget {
             ),
           );
       }
-      console.log("New message:", messageEvent);
     };
   }
 

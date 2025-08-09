@@ -133,7 +133,6 @@ function enterEditMode() {
 }
 
 async function updateUser() {
-  console.log(userToEdit.value);
   const result = await authStore.updateUserData(userToEdit.value);
   if (result instanceof Error) {
     error.value = result.message;

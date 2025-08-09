@@ -160,7 +160,6 @@ async function forwardMessage(chat: TChat, message: TMessage) {
 
 async function tryToForwardMessage(message: TMessage) {
   const sender = await userStore.getUserByIdFromServer(message.senderId);
-  console.log("Sender:", sender);
   if (!(sender instanceof Error) && sender.isPrivate) {
     notificationStore.add(
       new Notification(

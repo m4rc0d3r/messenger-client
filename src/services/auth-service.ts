@@ -61,7 +61,6 @@ export class AuthService {
   }
 
   public static async updateUserData(user: TUserToEditToServer) {
-    console.log("User to edit:", user);
     try {
       const response = await defaultAPI.post<TUserFromServer>(
         `${useConfigStore(pinia).config.serverApp.httpUrl}/users/edituser`,
