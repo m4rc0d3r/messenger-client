@@ -41,6 +41,12 @@ import ChatList from "@/components/ChatList.vue";
 import FindUserInput from "@/components/FindUserInput.vue";
 import ModalWindow from "@/components/ModalWindow.vue";
 import UserProfile from "@/components/UserProfile.vue";
+import { EVENT_BUS_INJECTION_KEY } from "@/event-bus/bus";
+import {
+  EVENT_BUS_EVENT_DISCRIMINATOR,
+  EventBusEventType,
+  type EventBusEvent,
+} from "@/event-bus/event";
 import { webSocketConnection } from "@/http/websocket";
 import { APIError } from "@/schemas/api-error";
 import { type TChat, type TCreateChat } from "@/schemas/chat";
@@ -51,7 +57,7 @@ import { UserService } from "@/services/user-service";
 import { useAuthStore } from "@/stores/auth-store";
 import { useChatStore } from "@/stores/chat-store";
 import { useNotificationStore } from "@/stores/notification-store";
-import { onMounted, ref } from "vue";
+import { inject, onMounted, onUnmounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -66,7 +72,27 @@ const selectedUser = ref<TUser>();
 const userDataToFind = ref("");
 const foundUsers = ref<TUser[] | null>(null);
 
+const eventBus = inject(EVENT_BUS_INJECTION_KEY);
+
+function selectChatForEvent({
+  detail: { id },
+}: CustomEvent<
+  Extract<
+    EventBusEvent,
+    {
+      [EVENT_BUS_EVENT_DISCRIMINATOR]: typeof EventBusEventType.SELECT_CHAT;
+    }
+  >["payload"]
+>) {
+  const index = chatStore.chats.value.findIndex((chat) => chat.id === id);
+  if (index !== -1) {
+    selectedChatIndex.value = index;
+  }
+}
+
 onMounted(async () => {
+  eventBus?.addEventListener(EventBusEventType.SELECT_CHAT, selectChatForEvent);
+
   const result = await chatStore.getChatsOfUser();
   if (result instanceof Error) {
     if (result instanceof APIError) {
@@ -83,6 +109,13 @@ onMounted(async () => {
     }
     webSocketConnection.connect();
   }
+});
+
+onUnmounted(() => {
+  eventBus?.removeEventListener(
+    EventBusEventType.SELECT_CHAT,
+    selectChatForEvent,
+  );
 });
 
 function selectChat(index: number) {

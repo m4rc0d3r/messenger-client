@@ -8,6 +8,7 @@ import router from "@/router";
 import { pinia } from "@/stores/pinia";
 import { either } from "fp-ts";
 import { createConfig, NodeEnv, useConfigStore } from "./config";
+import { EVENT_BUS_INJECTION_KEY, EventBus } from "./event-bus/bus";
 
 const eitherConfig = createConfig({
   ...import.meta.env,
@@ -22,5 +23,6 @@ const app = createApp(App);
 
 app.use(pinia);
 app.use(router);
+app.provide(EVENT_BUS_INJECTION_KEY, new EventBus());
 
 app.mount("#app");

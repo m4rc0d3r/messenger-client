@@ -1,11 +1,15 @@
 <script setup lang="ts">
+import BaseButton from "@/components/BaseButton.vue";
 import {
   Card,
   CardAction,
   CardContent,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/card";
+import { EVENT_BUS_INJECTION_KEY } from "@/event-bus/bus";
+import { EventBusEventType } from "@/event-bus/event";
 import { ChatType } from "@/schemas/chat";
 import { MESSAGE_DISCRIMINATOR, MessageOriginType } from "@/schemas/message";
 import { Str } from "@/shared";
@@ -14,7 +18,7 @@ import { useChatStore } from "@/stores/chat-store";
 import { useUserStore } from "@/stores/user-store";
 import { computedAsync } from "@vueuse/core";
 import { X } from "lucide-vue-next";
-import { computed } from "vue";
+import { computed, inject } from "vue";
 import {
   type ChatNotification,
   ChatNotificationType,
@@ -32,6 +36,8 @@ const emit = defineEmits<{
 const authStore = useAuthStore();
 const chatStore = useChatStore();
 const userStore = useUserStore();
+
+const eventBus = inject(EVENT_BUS_INJECTION_KEY);
 
 const TITLE_BY_CHAT_NOTIFICATION_TYPE: Record<ChatNotificationType, string> = {
   NEW_MESSAGE: "New message",
@@ -101,6 +107,18 @@ const content = computedAsync(async () => {
     }
   }
 });
+
+function selectChat() {
+  const notification = props.notification;
+  eventBus?.dispatchEvent(EventBusEventType.SELECT_CHAT, {
+    id:
+      notification[DISCRIMINATOR] === ChatNotificationType.NEW_CHAT
+        ? notification.payload.id
+        : notification[DISCRIMINATOR] === ChatNotificationType.NEW_CHAT_MEMBER
+        ? notification.payload.chat.id
+        : notification.payload.chatId,
+  });
+}
 </script>
 
 <template>
@@ -114,6 +132,9 @@ const content = computedAsync(async () => {
     <CardContent>
       {{ content }}
     </CardContent>
+    <CardFooter class="card-footer">
+      <BaseButton @click="selectChat">Go to chat</BaseButton>
+    </CardFooter>
   </Card>
 </template>
 
@@ -123,5 +144,9 @@ const content = computedAsync(async () => {
   background-color: var(--secondary);
   color: var(--secondary-foreground);
   gap: calc(var(--step) * 2);
+}
+
+.card-footer {
+  justify-content: end;
 }
 </style>
