@@ -6,7 +6,15 @@
       :message="message"
       @enter-edit-mode="
         (resetToViewMode: () => void) =>
-          emit('enter-message-editing-mode', message, resetToViewMode)
+         {
+          if (message.originType===MessageOriginType.original){
+             emit(
+              'enter-message-editing-mode',
+              message as OriginalMessage,
+              resetToViewMode
+            )
+          }
+         }
       "
     />
   </ul>
@@ -17,7 +25,11 @@
 
 <script setup lang="ts">
 import MessageCard from "@/components/MessageCard.vue";
-import type { TMessage } from "@/schemas/message";
+import {
+  MessageOriginType,
+  type OriginalMessage,
+  type TMessage,
+} from "@/schemas/message";
 import { onMounted, onUpdated, ref } from "vue";
 
 defineProps<{
@@ -26,7 +38,7 @@ defineProps<{
 
 const emit = defineEmits<{
   "enter-message-editing-mode": [
-    message: TMessage,
+    message: OriginalMessage,
     resetToViewMode: () => void,
   ];
 }>();

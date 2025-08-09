@@ -18,8 +18,7 @@
       <div class="text-data">
         <span>{{ chat.name }}</span>
         <span v-if="chat.messages.length > 0"
-          >{{ sender?.nickname }}:
-          {{ chat.messages[chat.messages.length - 1].text }}</span
+          >{{ lastMessageSender }}: {{ lastMessageText }}</span
         >
       </div>
     </CardContent>
@@ -29,9 +28,13 @@
 <script setup lang="ts">
 import { Card, CardContent } from "@/components/card";
 import { type TChat } from "@/schemas/chat";
+import { MESSAGE_DISCRIMINATOR, MessageOriginType } from "@/schemas/message";
 import type { TUser } from "@/schemas/user";
+import { Str } from "@/shared";
 import { useAuthStore } from "@/stores/auth-store";
+import { useMessageStore } from "@/stores/message-store";
 import { useUserStore } from "@/stores/user-store";
+import { computedAsync } from "@vueuse/core";
 import { Users } from "lucide-vue-next";
 import { computed, onMounted, onUpdated, ref } from "vue";
 
@@ -48,6 +51,7 @@ const emit = defineEmits({
 
 const authStore = useAuthStore();
 const userStore = useUserStore();
+const messageStore = useMessageStore();
 
 const sender = ref<TUser>();
 
@@ -64,6 +68,40 @@ onMounted(async () => {
 
 onUpdated(async () => {
   await updateSender();
+});
+
+const lastMessageText = computedAsync(async () => {
+  const lastMessage = props.chat.messages[props.chat.messages.length - 1];
+  if (!lastMessage) return Str.EMPTY;
+
+  if (lastMessage[MESSAGE_DISCRIMINATOR] === MessageOriginType.original)
+    return lastMessage.text;
+
+  const originalMessage = await messageStore.getMessageById(
+    lastMessage.messageId,
+  );
+  if (originalMessage instanceof Error) return Str.EMPTY;
+
+  return originalMessage.text;
+});
+
+const lastMessageSender = computedAsync(async () => {
+  const lastMessage = props.chat.messages[props.chat.messages.length - 1];
+  if (!lastMessage) return Str.EMPTY;
+
+  if (lastMessage[MESSAGE_DISCRIMINATOR] === MessageOriginType.original)
+    return props.chat.users.find(({ id }) => id === lastMessage.senderId)
+      ?.nickname;
+
+  const originalMessage = await messageStore.getMessageById(
+    lastMessage.messageId,
+  );
+  if (originalMessage instanceof Error) return Str.EMPTY;
+
+  const sender = await userStore.getUserById(originalMessage.senderId);
+  if (!sender) return Str.EMPTY;
+
+  return sender.nickname;
 });
 
 async function updateSender() {

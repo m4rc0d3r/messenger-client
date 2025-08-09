@@ -78,7 +78,8 @@ class WebSocketConnection extends EventTarget {
         break;
       }
       case WebSocketDataType.SendMessage: {
-        const message = messageEvent.data as ISendMessageDTO["data"];
+        const { data: message } =
+            messageEvent.data as ISendMessageDTO["data"];
         this.dispatchEvent(
           new CustomEvent<TMessage>(messageEvent.type, {
             detail: {
@@ -91,7 +92,8 @@ class WebSocketConnection extends EventTarget {
         break;
       }
       case WebSocketDataType.EditMessage: {
-        const message = messageEvent.data as IEditMessageDTO["data"];
+        const { data: message } =
+            messageEvent.data as IEditMessageDTO["data"];
         this.dispatchEvent(
           new CustomEvent<TMessage>(messageEvent.type, {
             detail: {
@@ -104,7 +106,8 @@ class WebSocketConnection extends EventTarget {
         break;
       }
       case WebSocketDataType.DeleteMessage: {
-        const message = messageEvent.data as IDeleteMessageDTO["data"];
+        const { data: message } =
+            messageEvent.data as IDeleteMessageDTO["data"];
         this.dispatchEvent(
           new CustomEvent<TMessage>(messageEvent.type, {
             detail: {

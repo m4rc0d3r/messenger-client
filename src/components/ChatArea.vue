@@ -43,12 +43,21 @@ import BaseButton from "@/components/BaseButton.vue";
 import ChatHeader from "@/components/ChatHeader.vue";
 import ChatMessageList from "@/components/ChatMessageList.vue";
 import type { TChat } from "@/schemas/chat";
-import type { TMessage, TMessageToSend } from "@/schemas/message";
+import {
+  MESSAGE_DISCRIMINATOR,
+  MessageOriginType,
+  type ForwardedMessage,
+  type OriginalMessage,
+  type TMessage,
+  type TMessageToSend,
+} from "@/schemas/message";
 import { Notification, NotificationStatus } from "@/schemas/notification";
 import { MessageService } from "@/services/message-service";
+import { Str } from "@/shared";
 import { useChatStore } from "@/stores/chat-store";
+import { useMessageStore } from "@/stores/message-store";
 import { useNotificationStore } from "@/stores/notification-store";
-import { computed, ref } from "vue";
+import { ref, watch } from "vue";
 
 enum Mode {
   SEND,
@@ -61,11 +70,13 @@ const props = defineProps<{
 
 const notificationStore = useNotificationStore();
 const chatStore = useChatStore();
+const messageStore = useMessageStore();
 
 const messageToSendOrToEdit = ref<TMessageToSend["text"]>("");
 const messageFilter = ref("");
+const filteredMessages = ref<TMessage[]>(props.chat?.messages ?? []);
 const mode = ref(Mode.SEND);
-const editedMessage = ref<TMessage>({
+const editedMessage = ref<Omit<OriginalMessage, "originType">>({
   id: 1,
   text: "",
   date: new Date(Date.now()),
@@ -74,15 +85,41 @@ const editedMessage = ref<TMessage>({
 });
 const resetMessageToViewMode = ref<() => void>();
 
-const filteredMessages = computed(() => {
+watch(props, async () => {
+  filteredMessages.value = await getFilteredMessages();
+});
+watch(messageFilter, async () => {
+  filteredMessages.value = await getFilteredMessages();
+});
+
+async function getFilteredMessages() {
+  if (messageFilter.value.length === 0) return props.chat?.messages ?? [];
+
+  if (!props.chat) return [];
+
+  const originalMessages = (
+    await Promise.all(
+      props.chat.messages
+        .filter(
+          (message): message is ForwardedMessage =>
+            message.originType === MessageOriginType.forwarded,
+        )
+        .map(({ messageId }) => messageStore.getMessageById(messageId)),
+    )
+  ).filter((value): value is OriginalMessage => !(value instanceof Error));
+
   return (
-    props.chat?.messages.filter((message) =>
-      message.text
+    props.chat.messages.filter((message) =>
+      (message[MESSAGE_DISCRIMINATOR] === MessageOriginType.original
+        ? message.text
+        : originalMessages.find(({ id }) => id === message.messageId)?.text ??
+          Str.EMPTY
+      )
         .toLocaleLowerCase()
         .includes(messageFilter.value.toLocaleLowerCase()),
     ) ?? []
   );
-});
+}
 
 async function sendMessage() {
   if (props.chat) {
@@ -109,7 +146,7 @@ function resetToSendMode() {
 }
 
 function enterMessageEditingMode(
-  message: TMessage,
+  message: OriginalMessage,
   resetToViewMode: () => void,
 ) {
   mode.value = Mode.EDIT;
@@ -123,7 +160,10 @@ function enterMessageEditingMode(
 
 async function editMessage() {
   editedMessage.value.text = messageToSendOrToEdit.value;
-  await chatStore.editMessage(editedMessage.value);
+  await chatStore.editMessage({
+    originType: MessageOriginType.original,
+    ...editedMessage.value,
+  });
   if (resetMessageToViewMode.value) {
     resetMessageToViewMode.value();
   }

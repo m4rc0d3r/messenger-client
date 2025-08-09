@@ -5,7 +5,11 @@ import {
   type TCreateChat,
   type TCreateChatToServer,
 } from "@/schemas/chat";
-import type { TMessage } from "@/schemas/message";
+import {
+  MESSAGE_DISCRIMINATOR,
+  type OriginalMessage,
+  type TMessage,
+} from "@/schemas/message";
 import { ChatService } from "@/services/chat-service";
 import { MessageService } from "@/services/message-service";
 import { defineStore } from "pinia";
@@ -17,8 +21,10 @@ export const useChatStore = defineStore("chat", () => {
   const chats = computed(() => _chats);
 
   async function getChatsOfUser() {
-    const result = await ChatService.getChatsOfUser();
-    const result2 = await MessageService.getMessages();
+    const [result, result2] = await Promise.all([
+      ChatService.getChatsOfUser(),
+      MessageService.getMessages(),
+    ]);
     if (result instanceof Error) {
       return result;
     } else if (result2 instanceof Error) {
@@ -73,7 +79,7 @@ export const useChatStore = defineStore("chat", () => {
     } else {
       const chat = _chats.value.find((chat) => chat.id === chatId);
       if (chat) {
-        chat.messages = result.map((message) => {
+        chat.messages = result.map(({ data: message }) => {
           return {
             ...message,
             date: new Date(message.createdAt),
@@ -85,7 +91,7 @@ export const useChatStore = defineStore("chat", () => {
     }
   }
 
-  async function editMessage(messageToEdit: TMessage) {
+  async function editMessage(messageToEdit: OriginalMessage) {
     const result = await MessageService.editMessage({
       id: messageToEdit.id,
       text: messageToEdit.text,
@@ -99,17 +105,18 @@ export const useChatStore = defineStore("chat", () => {
   }
 
   async function deleteMessage(messageToDelete: TMessage) {
-    const result = await MessageService.deleteMessage({
-      id: messageToDelete.id,
-      chatId: messageToDelete.chatId,
-    });
+    const result = await MessageService.deleteMessage(messageToDelete);
     if (result instanceof Error) {
       return result;
     }
   }
 
   async function forwardMessage(messageToForward: TMessage, chat: TChat) {
-    const result = await MessageService.forwardMessage(messageToForward, chat);
+    const result = await MessageService.forwardMessage({
+      originType: messageToForward[MESSAGE_DISCRIMINATOR],
+      id: messageToForward.id,
+      chatId: chat.id,
+    });
     if (result instanceof Error) {
       return result;
     }

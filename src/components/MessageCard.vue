@@ -15,6 +15,9 @@
     >
       <CardHeader>
         <CardTitle>{{ sender?.nickname }}</CardTitle>
+        <CardDescription v-if="forwardedBy">
+          Forwarded by {{ forwardedBy.nickname }}
+        </CardDescription>
         <CardAction class="message-card-action">
           <button @click="tryToForwardMessage(message)">Forward</button>
           <button
@@ -38,7 +41,7 @@
         </CardAction>
       </CardHeader>
       <CardContent>
-        <pre class="message__text">{{ message.text }}</pre>
+        <pre class="message__text">{{ messageText }}</pre>
       </CardContent>
       <CardFooter class="message-card-footer">
         <time :datetime="message.date.toISOString()">{{
@@ -104,18 +107,25 @@ import {
 import ChatList from "@/components/ChatList.vue";
 import ModalWindow from "@/components/ModalWindow.vue";
 import type { TChat } from "@/schemas/chat";
-import type { TMessage } from "@/schemas/message";
+import {
+  MESSAGE_DISCRIMINATOR,
+  MessageOriginType,
+  type OriginalMessage,
+  type TMessage,
+} from "@/schemas/message";
 import { Notification, NotificationStatus } from "@/schemas/notification";
 import type { TUser } from "@/schemas/user";
 import { useAuthStore } from "@/stores/auth-store";
 import { useChatStore } from "@/stores/chat-store";
+import { useMessageStore } from "@/stores/message-store";
 import { useNotificationStore } from "@/stores/notification-store";
 import { useUserStore } from "@/stores/user-store";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 const authStore = useAuthStore();
 const userStore = useUserStore();
 const chatStore = useChatStore();
+const messageStore = useMessageStore();
 const notificationStore = useNotificationStore();
 
 const props = defineProps<{
@@ -131,9 +141,32 @@ const isEditedNow = ref(false);
 const chatsWindowVisibility = ref(false);
 const deleteMessageWindowVisibility = ref(false);
 
+const forwardedBy = ref<TUser>();
+const originalMessage = ref<OriginalMessage>();
+
 onMounted(async () => {
-  sender.value = await userStore.getUserById(props.message.senderId);
+  if (props.message[MESSAGE_DISCRIMINATOR] === MessageOriginType.original) {
+    sender.value = await userStore.getUserById(props.message.senderId);
+  } else {
+    const [fwdBy, orMsg] = await Promise.all([
+      userStore.getUserById(props.message.senderId),
+      messageStore.getMessageById(props.message.messageId),
+    ]);
+    if (fwdBy) {
+      forwardedBy.value = fwdBy;
+    }
+    if (!(orMsg instanceof Error)) {
+      originalMessage.value = orMsg;
+      sender.value = await userStore.getUserById(orMsg.senderId);
+    }
+  }
 });
+
+const messageText = computed(() =>
+  props.message[MESSAGE_DISCRIMINATOR] === MessageOriginType.original
+    ? props.message.text
+    : originalMessage.value?.text,
+);
 
 async function deleteMessage(message: TMessage) {
   await chatStore.deleteMessage(message);

@@ -1,16 +1,18 @@
 import { defaultAPI } from "@/http/axios/default-api";
 import { APIError } from "@/schemas/api-error";
-import type { TChat } from "@/schemas/chat";
 import type {
+  OriginalMessage,
   TMessage,
   TMessageFromServer,
   TMessageToDelete,
   TMessageToDeleteToServer,
   TMessageToEdit,
   TMessageToEditToServer,
+  TMessageToForward,
   TMessageToForwardToServer,
   TMessageToSend,
   TMessageToSendToServer,
+  TOriginalMessageFromServer,
 } from "@/schemas/message";
 import { AxiosError, type AxiosResponse } from "axios";
 
@@ -21,7 +23,26 @@ export class MessageService {
         "messages/getallmessages",
       );
 
-      return response.data;
+      return response.data.map(({ data }) => data);
+    } catch (e) {
+      if (e instanceof AxiosError && e.response) {
+        return new APIError(
+          (e.response as AxiosResponse<APIError>).data.message,
+          (e.response as AxiosResponse<APIError>).data.code,
+        );
+      } else {
+        return new Error("Unexpected error");
+      }
+    }
+  }
+
+  public static async getMessageById(id: OriginalMessage["id"]) {
+    try {
+      const response = await defaultAPI.get<TOriginalMessageFromServer>(
+        `messages/getmessagebyid/${id}`,
+      );
+
+      return response.data.data;
     } catch (e) {
       if (e instanceof AxiosError && e.response) {
         return new APIError(
@@ -42,9 +63,9 @@ export class MessageService {
       );
 
       return {
-        ...response.data,
-        date: new Date(response.data.createdAt),
-        senderId: response.data.authorId,
+        ...response.data.data,
+        date: new Date(response.data.data.createdAt),
+        senderId: response.data.data.authorId,
       } as TMessage;
     } catch (e) {
       if (e instanceof AxiosError && e.response) {
@@ -98,13 +119,12 @@ export class MessageService {
     }
   }
 
-  public static async forwardMessage(messageTorward: TMessage, chat: TChat) {
+  public static async forwardMessage(data: TMessageToForward) {
     try {
       const response = await defaultAPI.post<boolean>(
         "messages/resendmessage",
         {
-          messageId: messageTorward.id,
-          chatId: chat.id,
+          data,
         } satisfies TMessageToForwardToServer,
       );
 
