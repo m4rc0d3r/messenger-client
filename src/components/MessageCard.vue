@@ -52,8 +52,7 @@
                 </li>
                 <li
                   v-if="
-                    message[MESSAGE_DISCRIMINATOR] ===
-                      MessageOriginType.original &&
+                    message.originType === MessageOriginType.original &&
                     authStore.currentUser.value?.id === message.senderId &&
                     !isEditedNow
                   "
