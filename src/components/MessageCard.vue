@@ -387,6 +387,10 @@ async function tryToForwardMessage(message: TMessage) {
   justify-content: space-evenly;
 }
 
+.delete-message-window__buttons > *:focus {
+  outline: 0.25rem solid black;
+}
+
 .message-card-footer {
   justify-content: end;
 }

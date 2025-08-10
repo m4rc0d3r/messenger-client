@@ -7,6 +7,7 @@ import {
 } from "@/schemas/chat";
 import {
   MESSAGE_DISCRIMINATOR,
+  MessageOriginType,
   type OriginalMessage,
   type TMessage,
 } from "@/schemas/message";
@@ -109,6 +110,7 @@ export const useChatStore = defineStore("chat", () => {
     if (result instanceof Error) {
       return result;
     }
+    deleteDependentForwardedMessages(messageToDelete);
   }
 
   async function forwardMessage(messageToForward: TMessage, chat: TChat) {
@@ -151,8 +153,27 @@ export const useChatStore = defineStore("chat", () => {
       if (index > -1) {
         chat.messages.splice(index, 1);
       }
+      deleteDependentForwardedMessages(messageToDelete);
     }
     return true;
+  }
+
+  function deleteDependentForwardedMessages({
+    id,
+    originType,
+  }: Pick<TMessage, "id" | "originType">) {
+    if (originType === MessageOriginType.original) {
+      for (let i = 0; i < _chats.value.length; ++i) {
+        _chats.value[i] = {
+          ..._chats.value[i],
+          messages: _chats.value[i].messages.filter(
+            (message) =>
+              message[MESSAGE_DISCRIMINATOR] === MessageOriginType.original ||
+              message.messageId !== id,
+          ),
+        };
+      }
+    }
   }
 
   return {

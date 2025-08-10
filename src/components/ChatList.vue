@@ -60,6 +60,12 @@ onMounted(async () => {
   padding: 0;
 }
 
+.chat-card-wrapper:focus {
+  outline: 0.125rem solid black;
+  outline-offset: -0.125rem;
+  border-radius: var(--radius-lg);
+}
+
 .chat-card {
   padding: calc(var(--step) * 2);
   width: 100%;
