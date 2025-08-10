@@ -240,7 +240,11 @@ const messageText = computed(() =>
 watchEffect(async () => {
   if (deleteMessageWindowVisibility.value) {
     await nextTick();
-    deleteMessageYesButton.value?.buttonRef?.focus();
+    (
+      deleteMessageYesButton.value as {
+        buttonRef: HTMLButtonElement | null | undefined;
+      }
+    )?.buttonRef?.focus();
   }
 });
 

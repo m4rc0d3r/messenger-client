@@ -120,7 +120,11 @@ const error = ref(Str.EMPTY);
 onMounted(async () => {
   resetToViewMode();
   await nextTick();
-  enterEditModeButton.value?.buttonRef?.focus();
+  (
+    enterEditModeButton.value as {
+      buttonRef: HTMLButtonElement | null | undefined;
+    }
+  )?.buttonRef?.focus();
 });
 
 const mode = ref(Mode.VIEW);

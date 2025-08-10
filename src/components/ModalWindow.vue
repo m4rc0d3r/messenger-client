@@ -26,7 +26,11 @@ const emit = defineEmits({
 const modalWindowWrapper = useTemplateRef("modal-window-wrapper");
 
 onMounted(() => {
-  modalWindowWrapper.value?.focus();
+  (
+    modalWindowWrapper as {
+      value: HTMLDivElement | null;
+    }
+  ).value?.focus();
 });
 
 function close() {

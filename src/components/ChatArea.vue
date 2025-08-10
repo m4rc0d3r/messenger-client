@@ -157,7 +157,7 @@ function enterMessageEditingMode(
   editedMessage.value = message;
   messageToSendOrToEdit.value = editedMessage.value.text;
   resetMessageToViewMode.value = resetToViewMode;
-  messageInput.value?.focus();
+  (messageInput.value as HTMLTextAreaElement | null)?.focus();
 }
 
 async function editMessage() {

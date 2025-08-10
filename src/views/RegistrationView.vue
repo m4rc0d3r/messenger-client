@@ -114,7 +114,11 @@ const user = ref<Required<TUserToRegister>>({
 const error = ref(Str.EMPTY);
 
 onMounted(() => {
-  emailInput.value?.inputRef?.focus();
+  (
+    emailInput.value as {
+      inputRef: HTMLInputElement | null | undefined;
+    }
+  )?.inputRef?.focus();
 });
 
 const AVATAR_FILE_CONSTRAINTS = {

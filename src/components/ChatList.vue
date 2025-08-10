@@ -37,9 +37,9 @@ onMounted(async () => {
 
   await nextTick();
   (
-    chatList.value?.children.item(props.focusedChatIndex)?.children.item(0) as
-      | HTMLButtonElement
-      | undefined
+    (chatList.value as HTMLUListElement | null)?.children
+      .item(props.focusedChatIndex)
+      ?.children.item(0) as HTMLButtonElement | undefined
   )?.focus();
 });
 </script>

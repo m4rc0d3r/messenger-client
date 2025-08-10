@@ -69,7 +69,11 @@ const user = ref<Required<TUserToLogin>>({
 const error = ref("");
 
 onMounted(() => {
-  emailInput.value?.inputRef?.focus();
+  (
+    emailInput.value as {
+      inputRef: HTMLInputElement | null | undefined;
+    }
+  )?.inputRef?.focus();
 });
 
 async function login() {
