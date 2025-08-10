@@ -118,6 +118,7 @@
           <ChatList
             :chats="chatStore.chats.value"
             :selected-chat-index="-1"
+            :focused-chat-index="0"
             @select="
               (index: number) =>
                 forwardMessage(chatStore.chats.value[index], message)
@@ -133,7 +134,11 @@
       <div class="delete-message-window">
         <p>Are you sure you want to delete the message?</p>
         <div class="delete-message-window__buttons">
-          <BaseButton @click="deleteMessage(message)">Yes</BaseButton>
+          <BaseButton
+            ref="delete-message-yes-button"
+            @click="deleteMessage(message)"
+            >Yes</BaseButton
+          >
           <BaseButton @click="deleteMessageWindowVisibility = false"
             >No</BaseButton
           >
@@ -172,7 +177,14 @@ import { useMessageStore } from "@/stores/message-store";
 import { useNotificationStore } from "@/stores/notification-store";
 import { useUserStore } from "@/stores/user-store";
 import { EllipsisVertical } from "lucide-vue-next";
-import { computed, onMounted, ref } from "vue";
+import {
+  computed,
+  nextTick,
+  onMounted,
+  ref,
+  useTemplateRef,
+  watchEffect,
+} from "vue";
 
 const authStore = useAuthStore();
 const userStore = useUserStore();
@@ -199,6 +211,8 @@ const originalMessage = ref<OriginalMessage>();
 const isMenuOpen = ref(false);
 const menuBtn = ref<HTMLElement | null>(null);
 
+const deleteMessageYesButton = useTemplateRef("delete-message-yes-button");
+
 onMounted(async () => {
   if (props.message[MESSAGE_DISCRIMINATOR] === MessageOriginType.original) {
     sender.value = await userStore.getUserById(props.message.senderId);
@@ -223,8 +237,26 @@ const messageText = computed(() =>
     : originalMessage.value?.text,
 );
 
+watchEffect(async () => {
+  if (deleteMessageWindowVisibility.value) {
+    await nextTick();
+    deleteMessageYesButton.value?.buttonRef?.focus();
+  }
+});
+
 async function deleteMessage(message: TMessage) {
-  await chatStore.deleteMessage(message);
+  const result = await chatStore.deleteMessage(message);
+  if (result instanceof Error) {
+    notificationStore.add(
+      new Notification(
+        NotificationStatus.FAILURE,
+        result.message === "Internal server error"
+          ? "Failed to delete message."
+          : result.message,
+      ),
+    );
+  }
+  deleteMessageWindowVisibility.value = false;
 }
 
 function enterEditMode() {

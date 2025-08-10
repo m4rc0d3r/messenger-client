@@ -1,5 +1,9 @@
 <template>
-  <div class="find-user-block">
+  <div
+    class="find-user-block"
+    tabindex="-1"
+    @keydown.esc="emit('update:userDataToFind', '')"
+  >
     <BaseInput
       :model-value="userDataToFind"
       placeholder="Enter an email or nickname"
@@ -16,13 +20,19 @@
         v-if="foundUsers && foundUsers.length > 0"
         class="find-user-block__found-users"
       >
-        <UserCard
-          v-for="user in foundUsers"
-          :key="user.id"
-          :user="user"
-          class="user-card"
-          @click="emit('click-on-user', user)"
-        />
+        <li v-for="user in foundUsers" :key="user.id">
+          <button
+            @click="
+              () => {
+                emit('click-on-user', user);
+                emit('update:userDataToFind', '');
+              }
+            "
+            class="user-card-wrapper"
+          >
+            <UserCard :user="user" class="user-card" />
+          </button>
+        </li>
       </ul>
       <div
         v-else-if="foundUsers && foundUsers.length === 0"
@@ -88,6 +98,13 @@ const emit = defineEmits<{
 
 .no-users-found {
   margin: auto;
+}
+
+.user-card-wrapper {
+  border: none;
+  background-color: transparent;
+  width: 100%;
+  padding: 0;
 }
 
 .user-card {

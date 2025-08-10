@@ -58,6 +58,7 @@ const pos = reactive({ top: props.top, left: props.left });
 watchEffect(async () => {
   if (model.value) {
     await nextTick();
+    root.value?.focus();
     updatePositionFromAnchor();
   }
 });

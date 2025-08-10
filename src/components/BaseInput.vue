@@ -1,5 +1,6 @@
 <template>
   <input
+    ref="input"
     class="input"
     :value="modelValue"
     @input="e => {
@@ -9,6 +10,8 @@
 </template>
 
 <script setup lang="ts">
+import { useTemplateRef } from "vue";
+
 defineProps<{
   modelValue: string;
 }>();
@@ -16,6 +19,12 @@ defineProps<{
 const emit = defineEmits<{
   "update:modelValue": [value: string];
 }>();
+
+const inputRef = useTemplateRef("input");
+
+defineExpose({
+  inputRef,
+});
 </script>
 
 <style scoped>

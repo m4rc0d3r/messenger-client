@@ -45,7 +45,13 @@
               <p>Allowed extensions: {{ ACCEPTABLE_AVATAR_EXTENSIONS }}</p>
             </div>
             <label for="email">Email</label>
-            <BaseInput v-model="user.email" type="email" id="email" required />
+            <BaseInput
+              ref="email-input"
+              v-model="user.email"
+              type="email"
+              id="email"
+              required
+            />
             <label for="nickname">Nickname</label>
             <BaseInput
               v-model="user.nickname"
@@ -90,11 +96,13 @@ import type { TUserToRegister } from "@/schemas/user";
 import { File as FileModule, Str } from "@/shared";
 import { useAuthStore } from "@/stores/auth-store";
 import { Trash, User } from "lucide-vue-next";
-import { ref, useTemplateRef } from "vue";
+import { onMounted, ref, useTemplateRef } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
 const authStore = useAuthStore();
+
+const emailInput = useTemplateRef("email-input");
 
 const form = ref<HTMLFormElement>();
 const user = ref<Required<TUserToRegister>>({
@@ -104,6 +112,10 @@ const user = ref<Required<TUserToRegister>>({
   avatar: Str.EMPTY,
 });
 const error = ref(Str.EMPTY);
+
+onMounted(() => {
+  emailInput.value?.inputRef?.focus();
+});
 
 const AVATAR_FILE_CONSTRAINTS = {
   mimeType: [

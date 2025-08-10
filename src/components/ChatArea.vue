@@ -7,6 +7,7 @@
     />
     <div class="input-block">
       <textarea
+        ref="message-input"
         v-model="messageToSendOrToEdit"
         class="input-block__input"
         rows="5"
@@ -19,6 +20,7 @@
             }
           }
         }"
+        @keydown.esc="resetToSendMode"
       >
       </textarea>
       <BaseButton
@@ -57,7 +59,7 @@ import { Str } from "@/shared";
 import { useChatStore } from "@/stores/chat-store";
 import { useMessageStore } from "@/stores/message-store";
 import { useNotificationStore } from "@/stores/notification-store";
-import { ref, watch } from "vue";
+import { ref, useTemplateRef, watchEffect } from "vue";
 
 enum Mode {
   SEND,
@@ -85,10 +87,9 @@ const editedMessage = ref<Omit<OriginalMessage, "originType">>({
 });
 const resetMessageToViewMode = ref<() => void>();
 
-watch(props, async () => {
-  filteredMessages.value = await getFilteredMessages();
-});
-watch(messageFilter, async () => {
+const messageInput = useTemplateRef("message-input");
+
+watchEffect(async () => {
   filteredMessages.value = await getFilteredMessages();
 });
 
@@ -156,6 +157,7 @@ function enterMessageEditingMode(
   editedMessage.value = message;
   messageToSendOrToEdit.value = editedMessage.value.text;
   resetMessageToViewMode.value = resetToViewMode;
+  messageInput.value?.focus();
 }
 
 async function editMessage() {

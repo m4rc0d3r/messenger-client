@@ -27,6 +27,7 @@
             v-else
             type="email"
             id="email-to-edit"
+            autofocus
             v-model="userToEdit.email"
           />
           <label for="email-to-nickname">Nickname</label>
@@ -70,7 +71,9 @@
     </CardContent>
     <CardFooter class="card-footer">
       <div v-if="mode === Mode.VIEW" class="button-block">
-        <BaseButton @click="enterEditMode">Edit</BaseButton>
+        <BaseButton ref="enter-edit-mode-button" @click="enterEditMode"
+          >Edit</BaseButton
+        >
       </div>
       <div v-else class="button-block">
         <BaseButton @click="updateUser">Save</BaseButton>
@@ -93,7 +96,7 @@ import type { TUser, TUserToEdit } from "@/schemas/user";
 import { Str } from "@/shared";
 import { useAuthStore } from "@/stores/auth-store";
 import { User } from "lucide-vue-next";
-import { onMounted, ref } from "vue";
+import { nextTick, onMounted, ref, useTemplateRef } from "vue";
 import BaseButton from "./BaseButton.vue";
 import BaseInput from "./BaseInput.vue";
 
@@ -114,11 +117,17 @@ const userToEdit = ref<Required<TUserToEdit & Pick<TUser, "avatar">>>({
 });
 const error = ref(Str.EMPTY);
 
-onMounted(() => {
+onMounted(async () => {
   resetToViewMode();
+  await nextTick();
+  enterEditModeButton.value?.buttonRef?.focus();
 });
 
 const mode = ref(Mode.VIEW);
+
+const enterEditModeButton = useTemplateRef<InstanceType<typeof BaseButton>>(
+  "enter-edit-mode-button",
+);
 
 function enterEditMode() {
   mode.value = Mode.EDIT;

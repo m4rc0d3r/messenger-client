@@ -14,12 +14,13 @@
           class="main-menu__item"
           >About</RouterLink
         >
-        <span
+        <button
           v-if="authStore.isLoggedIn"
           class="main-menu__item"
           @click="groupChatCreationVisibility = true"
-          >Create chat</span
         >
+          Create chat
+        </button>
       </div>
       <div class="right-menu">
         <RouterLink
@@ -34,7 +35,7 @@
           class="main-menu__item"
           >Login</RouterLink
         >
-        <div
+        <button
           v-if="authStore.isLoggedIn"
           @click="showUserProfile"
           class="main-menu__item me-section"
@@ -49,14 +50,14 @@
           <span>
             {{ authStore.currentUser.value?.nickname }}
           </span>
-        </div>
-        <span
+        </button>
+        <button
           v-if="authStore.isLoggedIn"
           @click="logout"
           class="main-menu__item"
         >
           Logout
-        </span>
+        </button>
       </div>
     </nav>
     <RouterView />
@@ -134,7 +135,9 @@ async function logout() {
   await authStore.logout();
   webSocketConnection.close();
   webSocketConnection.removeAllListeners();
-  router.push("/login");
+  if (!["/register", "/login"].includes(location.pathname)) {
+    router.push("/login");
+  }
 }
 
 watchEffect(() => {
@@ -167,6 +170,9 @@ watchEffect(() => {
   box-sizing: border-box;
   margin-right: 10px;
   padding: 10px 15px;
+  border: none;
+  background-color: transparent;
+  font-size: 1.75rem;
 }
 
 .main-menu__item:hover {

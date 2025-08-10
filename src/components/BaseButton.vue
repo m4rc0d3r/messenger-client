@@ -1,10 +1,18 @@
 <template>
-  <button class="button">
+  <button ref="button" class="button">
     <slot></slot>
   </button>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useTemplateRef } from "vue";
+
+const buttonRef = useTemplateRef("button");
+
+defineExpose({
+  buttonRef,
+});
+</script>
 
 <style scoped>
 .button {
@@ -31,5 +39,9 @@
 
 .button:hover {
   background-color: color-mix(in oklab, var(--primary) 75%, transparent);
+}
+
+.button:focus-visible {
+  outline: 0.25rem solid black;
 }
 </style>

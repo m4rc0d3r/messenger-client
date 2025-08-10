@@ -53,5 +53,7 @@ defineProps<{
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  text-align: left;
+  font-size: 1rem;
 }
 </style>

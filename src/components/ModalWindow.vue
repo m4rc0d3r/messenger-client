@@ -1,6 +1,12 @@
 <template>
   <Teleport to="body">
-    <div @click="emit('close')" class="modal-window-wrapper">
+    <div
+      ref="modal-window-wrapper"
+      class="modal-window-wrapper"
+      tabindex="0"
+      @click="close"
+      @keydown.esc="close"
+    >
       <div @click="(ev) => ev.stopPropagation()" class="modal-window">
         <slot></slot>
       </div>
@@ -9,11 +15,23 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, useTemplateRef } from "vue";
+
 const emit = defineEmits({
   close() {
     return true;
   },
 });
+
+const modalWindowWrapper = useTemplateRef("modal-window-wrapper");
+
+onMounted(() => {
+  modalWindowWrapper.value?.focus();
+});
+
+function close() {
+  emit("close");
+}
 </script>
 
 <style scoped>

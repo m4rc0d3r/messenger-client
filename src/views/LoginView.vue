@@ -11,7 +11,13 @@
         <form ref="form" @submit.prevent class="form">
           <div class="form-fields">
             <label for="email">Email</label>
-            <BaseInput v-model="user.email" type="email" id="email" required />
+            <BaseInput
+              ref="email-input"
+              v-model="user.email"
+              type="email"
+              id="email"
+              required
+            />
             <label for="password">Password</label>
             <BaseInput
               v-model="user.password"
@@ -47,11 +53,13 @@ import {
 } from "@/components/card";
 import type { TUserToLogin } from "@/schemas/user";
 import { useAuthStore } from "@/stores/auth-store";
-import { ref } from "vue";
+import { onMounted, ref, useTemplateRef } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 
 const router = useRouter();
 const authStore = useAuthStore();
+
+const emailInput = useTemplateRef("email-input");
 
 const form = ref<HTMLFormElement>();
 const user = ref<Required<TUserToLogin>>({
@@ -59,6 +67,10 @@ const user = ref<Required<TUserToLogin>>({
   password: "",
 });
 const error = ref("");
+
+onMounted(() => {
+  emailInput.value?.inputRef?.focus();
+});
 
 async function login() {
   if (form.value?.checkValidity()) {

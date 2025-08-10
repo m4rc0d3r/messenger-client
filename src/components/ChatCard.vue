@@ -1,6 +1,5 @@
 <template>
   <Card
-    @click="emit('select')"
     :class="{
       'chat-card': true,
       'chat-card__selected': selected,
@@ -42,12 +41,6 @@ const props = defineProps<{
   chat: TChat;
   selected: boolean;
 }>();
-
-const emit = defineEmits({
-  select() {
-    return true;
-  },
-});
 
 const authStore = useAuthStore();
 const userStore = useUserStore();
@@ -160,5 +153,10 @@ async function updateSender() {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+}
+
+.text-data > * {
+  text-align: left;
+  font-size: 1rem;
 }
 </style>
