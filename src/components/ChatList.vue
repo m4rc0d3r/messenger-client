@@ -5,6 +5,7 @@
         <ChatCard
           :chat="chat"
           :selected="index === selectedChatIndex"
+          :show-action-button="showActionButton"
           class="chat-card"
         />
       </button>
@@ -21,6 +22,7 @@ const props = defineProps<{
   chats: TChat[];
   selectedChatIndex: number;
   focusedChatIndex?: number | undefined;
+  showActionButton?: boolean | undefined;
 }>();
 
 const emit = defineEmits<{

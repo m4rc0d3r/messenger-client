@@ -43,3 +43,7 @@ export interface IDeleteMessageDTO
   extends IWebSocketDataDTO<TMessageFromServer> {
   type: WebSocketDataType.DeleteMessage;
 }
+
+export interface IDeleteChatDTO extends IWebSocketDataDTO<TChatFromServer> {
+  type: WebSocketDataType.DeleteChat;
+}

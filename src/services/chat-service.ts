@@ -4,6 +4,7 @@ import type {
   AddUserToChatToServer,
   TChatFromServer,
   TCreateChatToServer,
+  TDeleteChat,
 } from "@/schemas/chat";
 import type { TMessageFromServer } from "@/schemas/message";
 import { AxiosError, type AxiosResponse } from "axios";
@@ -53,6 +54,25 @@ export class ChatService {
       const response = await defaultAPI.post<{}>(
         "chats/addusertochat",
         userToChat,
+      );
+
+      return response.data;
+    } catch (e) {
+      if (e instanceof AxiosError && e.response) {
+        return new APIError(
+          (e.response as AxiosResponse<APIError>).data.message,
+          (e.response as AxiosResponse<APIError>).data.code,
+        );
+      } else {
+        return new Error("Unexpected error");
+      }
+    }
+  }
+
+  public static async deleteChat({ id }: TDeleteChat) {
+    try {
+      const response = await defaultAPI.post<TChatFromServer>(
+        `chats/delete/${id}`,
       );
 
       return response.data;

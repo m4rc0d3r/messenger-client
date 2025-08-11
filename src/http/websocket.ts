@@ -68,6 +68,19 @@ class WebSocketConnection extends EventTarget {
         );
         break;
       }
+      case WebSocketDataType.DeleteChat: {
+        const chat = messageEvent.data as ICreateChatDTO["data"];
+        this.dispatchEvent(
+          new CustomEvent<TChat>(messageEvent.type, {
+            detail: {
+              ...chat,
+              messages: [],
+              users: chat.participants,
+            } as TChat,
+          }),
+        );
+        break;
+      }
       case WebSocketDataType.AddUserToChat: {
         const addedUser = messageEvent.data as IAddUserToChatDTO["data"];
         this.dispatchEvent(

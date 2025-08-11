@@ -15,6 +15,7 @@
       <ChatList
         :chats="chatStore.chats.value"
         :selected-chat-index="selectedChatIndex"
+        show-action-button
         @select="selectChat"
       />
     </div>
@@ -180,6 +181,12 @@ webSocketConnection.addEventListener("CreateChat", async (e) => {
       payload: chat,
     });
   }
+});
+
+webSocketConnection.addEventListener("DeleteChat", async (e) => {
+  const chat = (e as CustomEvent<TChat>).detail;
+  chatStore.chats.value.push(chat);
+  chatStore.deleteChat(chat);
 });
 
 webSocketConnection.addEventListener("AddUserToChat", async (e) => {

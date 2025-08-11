@@ -36,3 +36,6 @@ export type AddUserToChat = {
   userId: TUser["id"];
 };
 export type AddUserToChatToServer = AddUserToChat;
+
+export type TDeleteChat = Pick<TChat, "id">;
+export type TDeleteChatToServer = TCreateChat;

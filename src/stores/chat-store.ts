@@ -4,6 +4,7 @@ import {
   type TChat,
   type TCreateChat,
   type TCreateChatToServer,
+  type TDeleteChat,
 } from "@/schemas/chat";
 import {
   MESSAGE_DISCRIMINATOR,
@@ -59,6 +60,28 @@ export const useChatStore = defineStore("chat", () => {
       return result;
     } else {
       return _chats.value[_chats.value.length - 1];
+    }
+  }
+
+  function deleteChat(chat: Pick<TChat, "id">) {
+    _chats.value = _chats.value.filter(({ id }) => id !== chat.id);
+  }
+
+  async function deleteChatOnServer(chat: TDeleteChat): Promise<TChat | Error> {
+    const result = await ChatService.deleteChat(chat);
+    if (result instanceof Error) {
+      return result;
+    } else {
+      const { id, name, link, authorId, type, participants } = result;
+      return {
+        id,
+        type,
+        name,
+        link,
+        authorId,
+        messages: [],
+        users: participants,
+      };
     }
   }
 
@@ -181,6 +204,8 @@ export const useChatStore = defineStore("chat", () => {
     getChatsOfUser,
     addMessageToChat,
     createChat,
+    deleteChatOnServer,
+    deleteChat,
     addUserToChat,
     getAllMessagesFromChat,
     editMessage,
