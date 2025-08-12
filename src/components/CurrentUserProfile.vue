@@ -71,7 +71,10 @@
     </CardContent>
     <CardFooter class="card-footer">
       <div v-if="mode === Mode.VIEW" class="button-block">
-        <BaseButton ref="enter-edit-mode-button" @click="enterEditMode"
+        <BaseButton
+          ref="enter-edit-mode-button"
+          class="enter-edit-mode-button"
+          @click="enterEditMode"
           >Edit</BaseButton
         >
       </div>
@@ -224,5 +227,9 @@ function resetToViewMode() {
 
 .card-footer {
   justify-content: end;
+}
+
+.enter-edit-mode-button:focus {
+  outline: 0.25rem solid black;
 }
 </style>

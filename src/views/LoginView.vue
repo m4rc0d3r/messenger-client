@@ -129,4 +129,8 @@ async function login() {
 .link {
   text-decoration: none;
 }
+
+.link:focus-visible {
+  outline-offset: 0.125rem;
+}
 </style>

@@ -5,6 +5,7 @@
     @keydown.esc="emit('update:userDataToFind', '')"
   >
     <BaseInput
+      ref="input"
       :model-value="userDataToFind"
       placeholder="Enter an email or nickname"
       @update:model-value="
@@ -48,6 +49,7 @@
 import BaseInput from "@/components/BaseInput.vue";
 import UserCard from "@/components/UserCard.vue";
 import type { TUser } from "@/schemas/user";
+import { useTemplateRef } from "vue";
 
 defineProps<{
   userDataToFind: string;
@@ -58,6 +60,12 @@ const emit = defineEmits<{
   "click-on-user": [user: TUser];
   "update:userDataToFind": [value: string];
 }>();
+
+const inputRef = useTemplateRef("input");
+
+defineExpose({
+  inputRef,
+});
 </script>
 
 <style scoped>

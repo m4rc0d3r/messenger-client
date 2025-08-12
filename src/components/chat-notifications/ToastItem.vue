@@ -24,6 +24,7 @@ import {
   ChatNotificationType,
   DISCRIMINATOR,
 } from "./chat-notification";
+import { useChatNotificationsStore } from "./store";
 
 const props = defineProps<{
   notification: ChatNotification;
@@ -36,6 +37,7 @@ const emit = defineEmits<{
 const authStore = useAuthStore();
 const chatStore = useChatStore();
 const userStore = useUserStore();
+const chatNotificationsStore = useChatNotificationsStore();
 
 const eventBus = inject(EVENT_BUS_INJECTION_KEY);
 
@@ -118,6 +120,7 @@ function selectChat() {
           ? notification.payload.chat.id
           : notification.payload.chatId,
   });
+  chatNotificationsStore.remove(props.notification.id);
 }
 </script>
 

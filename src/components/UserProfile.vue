@@ -21,6 +21,8 @@
     <CardFooter class="card-footer">
       <BaseButton
         v-if="!chatWithUserAlreadyExists"
+        ref="create-chat-button"
+        class="create-chat-button"
         @click="
           emit('create-chat', {
             type: ChatType.dialogue,
@@ -47,7 +49,7 @@ import {
 import { ChatType, type TCreateChat } from "@/schemas/chat";
 import type { TUser } from "@/schemas/user";
 import { useChatStore } from "@/stores/chat-store";
-import { onMounted, ref } from "vue";
+import { nextTick, onMounted, ref, useTemplateRef } from "vue";
 const props = defineProps<{
   user: TUser;
 }>();
@@ -57,6 +59,7 @@ const emit = defineEmits<{
 }>();
 
 const chatWithUserAlreadyExists = ref(false);
+const createChatButton = useTemplateRef("create-chat-button");
 
 onMounted(() => {
   chatWithUserAlreadyExists.value = Boolean(
@@ -68,6 +71,15 @@ onMounted(() => {
       );
     }),
   );
+});
+
+onMounted(async () => {
+  await nextTick();
+  (
+    createChatButton.value as {
+      buttonRef: HTMLButtonElement | null | undefined;
+    }
+  )?.buttonRef?.focus();
 });
 </script>
 
@@ -107,5 +119,9 @@ onMounted(() => {
 
 .card-footer {
   justify-content: end;
+}
+
+.create-chat-button:focus {
+  outline: 0.25rem solid black;
 }
 </style>

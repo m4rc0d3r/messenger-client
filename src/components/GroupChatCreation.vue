@@ -8,15 +8,21 @@
       >
     </CardHeader>
     <CardContent>
-      <form ref="form" @submit.prevent class="form">
+      <form ref="form" :id="formId" @submit.prevent class="form">
         <div class="form-fields">
           <label for="name">Name</label>
-          <BaseInput v-model="name" type="text" id="name" required />
+          <BaseInput
+            ref="input"
+            v-model="name"
+            type="text"
+            id="name"
+            required
+          />
         </div>
       </form>
     </CardContent>
     <CardFooter class="card-footer">
-      <BaseButton @click="create">Create</BaseButton>
+      <BaseButton :form="formId" @click="create">Create</BaseButton>
     </CardFooter>
   </Card>
 </template>
@@ -30,7 +36,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/card";
-import { ref } from "vue";
+import { nextTick, onMounted, ref, useId, useTemplateRef } from "vue";
 import BaseButton from "./BaseButton.vue";
 import BaseInput from "./BaseInput.vue";
 
@@ -40,6 +46,17 @@ const emit = defineEmits<{
 
 const name = ref("");
 const form = ref<HTMLFormElement>();
+const input = useTemplateRef("input");
+const formId = useId();
+
+onMounted(async () => {
+  await nextTick();
+  (
+    input.value as {
+      inputRef: HTMLInputElement | null | undefined;
+    }
+  )?.inputRef?.focus();
+});
 
 function create() {
   if (form.value?.checkValidity()) {

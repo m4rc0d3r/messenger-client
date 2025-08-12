@@ -164,10 +164,12 @@ webSocketConnection.addEventListener("SendMessage", (e) => {
   addMessageToChat(message.chatId, message);
   if (message.senderId !== authStore.currentUser.value?.id) {
     (document.getElementById("new-message-sound") as HTMLAudioElement).play();
-    chatNotificationsStore.add({
-      type: ChatNotificationType.NEW_MESSAGE,
-      payload: message,
-    });
+    if (chatStore.chats.value[selectedChatIndex.value].id !== message.chatId) {
+      chatNotificationsStore.add({
+        type: ChatNotificationType.NEW_MESSAGE,
+        payload: message,
+      });
+    }
   }
 });
 

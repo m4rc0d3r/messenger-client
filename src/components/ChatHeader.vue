@@ -52,7 +52,10 @@
           </ul>
         </CardContent>
         <CardFooter class="chat-info-card-footer">
-          <BaseButton @click="userAddWindowVisibility = true"
+          <BaseButton
+            ref="add-participant-button"
+            class="add-participant-button"
+            @click="userAddWindowVisibility = true"
             >Add a participant</BaseButton
           >
         </CardFooter>
@@ -70,6 +73,7 @@
         </CardHeader>
         <CardContent>
           <FindUserInput
+            ref="find-user-input"
             :user-data-to-find="userDataToFind"
             :found-users="foundUsers"
             @update:user-data-to-find="
@@ -115,7 +119,7 @@ import { UserService } from "@/services/user-service";
 import { useAuthStore } from "@/stores/auth-store";
 import { useChatStore } from "@/stores/chat-store";
 import { useNotificationStore } from "@/stores/notification-store";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, useTemplateRef, watchEffect } from "vue";
 
 const props = defineProps<{
   chat: TChat;
@@ -136,6 +140,30 @@ const foundUsers = ref<TUser[] | null>(null);
 const interlocutor = ref<TUser>();
 const userProfileVisibility = ref(false);
 const selectedUser = ref<TUser>();
+const addParticipantButton = useTemplateRef("add-participant-button");
+const findUserInput = useTemplateRef("find-user-input");
+
+watchEffect(() => {
+  if (showChatInfoWindowVisibility.value) {
+    (
+      addParticipantButton.value as {
+        buttonRef: HTMLButtonElement | null | undefined;
+      }
+    )?.buttonRef?.focus();
+  }
+});
+
+watchEffect(() => {
+  if (userAddWindowVisibility.value) {
+    (
+      findUserInput.value as {
+        inputRef: {
+          inputRef: HTMLInputElement | null | undefined;
+        };
+      }
+    )?.inputRef?.inputRef?.focus();
+  }
+});
 
 onMounted(async () => {
   await getInterlocutor();
@@ -247,5 +275,9 @@ async function createChat(chat: TCreateChat) {
 
 .chat-info-user-card:hover {
   cursor: pointer;
+}
+
+.add-participant-button:focus {
+  outline: 0.25rem solid black;
 }
 </style>

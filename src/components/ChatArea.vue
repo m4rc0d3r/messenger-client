@@ -93,6 +93,11 @@ watchEffect(async () => {
   filteredMessages.value = await getFilteredMessages();
 });
 
+watchEffect(() => {
+  props.chat;
+  (messageInput.value as HTMLTextAreaElement | null)?.focus();
+});
+
 async function getFilteredMessages() {
   if (messageFilter.value.length === 0) return props.chat?.messages ?? [];
 

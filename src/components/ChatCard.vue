@@ -4,6 +4,7 @@
       'chat-card': true,
       'chat-card__selected': selected,
       'chat-card__no-selected': !selected,
+      class: true,
     }"
   >
     <CardContent class="card-content">
@@ -99,7 +100,6 @@ import { computedAsync } from "@vueuse/core";
 import { Users } from "lucide-vue-next";
 import {
   computed,
-  nextTick,
   onMounted,
   onUpdated,
   ref,
@@ -111,6 +111,7 @@ const props = defineProps<{
   chat: TChat;
   selected: boolean;
   showActionButton?: boolean | undefined;
+  class?: string | undefined;
 }>();
 
 const authStore = useAuthStore();
@@ -142,13 +143,14 @@ onUpdated(async () => {
 });
 
 watchEffect(async () => {
-  if (deleteChatYesButton.value) {
-    await nextTick();
-    (
-      deleteChatYesButton.value as {
-        buttonRef: HTMLButtonElement | null | undefined;
-      }
-    )?.buttonRef?.focus();
+  if (deleteChatWindowVisibility.value) {
+    setTimeout(() => {
+      (
+        deleteChatYesButton.value as {
+          buttonRef: HTMLButtonElement | null | undefined;
+        }
+      )?.buttonRef?.focus();
+    }, 0);
   }
 });
 const lastMessageText = computedAsync(async () => {
