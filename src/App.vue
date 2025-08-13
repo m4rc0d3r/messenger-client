@@ -84,6 +84,41 @@
     src="/mixkit-confirmation-tone-2867.wav"
     id="new-message-sound"
   ></audio>
+  <div
+    v-if="
+      configStore.config.serverApp.deploymentPlatform ===
+      zConfig.innerType().shape.serverApp.innerType().shape
+        .VITE_SERVER_DEPLOYMENT_PLATFORM.Enum.RENDER
+    "
+    class="request-is-taking-too-long"
+  >
+    <Info class="request-is-taking-too-long-icon" />
+    <div class="request-is-taking-too-long-explanation">
+      <p>
+        If any operation (e.g. registration, creating a chat, sending a message)
+        does not give a response for a long time (more than 5 seconds), it may
+        mean that the backend has stopped due to inactivity. You can check this
+        by going to this
+        <a :href="configStore.config.serverApp.httpUrl" target="_blank"
+          >address</a
+        >:
+      </p>
+      <ul class="request-is-taking-too-long-list">
+        <li>
+          if the backend is inactive, you will see a page with a notification
+          about it
+        </li>
+        <li>
+          if the backend is active, you will see a white page with the text
+          "Hello World!"
+        </li>
+      </ul>
+      <p>
+        If the backend is inactive, wait for it to start and repeat the
+        operation again.
+      </p>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -94,10 +129,11 @@ import SimpleNotification from "@/components/SimpleNotification.vue";
 import { webSocketConnection } from "@/http/websocket";
 import { useAuthStore } from "@/stores/auth-store";
 import { useNotificationStore } from "@/stores/notification-store";
-import { User } from "lucide-vue-next";
+import { Info, User } from "lucide-vue-next";
 import { ref, watchEffect } from "vue";
 import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
 import GroupChatCreation from "./components/GroupChatCreation.vue";
+import { useConfigStore, zConfig } from "./config";
 import { ChatType } from "./schemas/chat";
 import { Notification, NotificationStatus } from "./schemas/notification";
 import { Str } from "./shared";
@@ -109,6 +145,7 @@ const notifications = notificationStore.notifications;
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
+const configStore = useConfigStore();
 
 const userProfileVisibility = ref(false);
 const groupChatCreationVisibility = ref(false);
@@ -213,5 +250,38 @@ watchEffect(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.request-is-taking-too-long {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  align-items: end;
+  gap: calc(var(--step) * 4);
+  padding: calc(var(--step) * 4);
+}
+
+.request-is-taking-too-long-icon {
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+}
+
+.request-is-taking-too-long:hover > :nth-child(2) {
+  display: block;
+}
+
+.request-is-taking-too-long-explanation {
+  display: none;
+  background-color: var(--background);
+  border: 0.125rem solid black;
+  border-radius: var(--radius-lg);
+  padding: 0.5rem;
+}
+
+.request-is-taking-too-long-list {
+  list-style-type: circle;
+  list-style-position: inside;
 }
 </style>

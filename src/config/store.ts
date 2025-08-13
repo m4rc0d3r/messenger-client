@@ -10,6 +10,7 @@ const useConfigStore = defineStore("config", () => {
     serverApp: {
       httpUrl: "",
       websocketUrl: "",
+      deploymentPlatform: "LOCAL",
     },
   });
 
