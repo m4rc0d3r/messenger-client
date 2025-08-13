@@ -74,8 +74,10 @@ const content = computedAsync(async () => {
     return [
       "User ",
       notification.payload.user.nickname,
-      " has been added to the group chat ",
-      chatName,
+      " has been added to ",
+      ...(chatId.value === notification.selectedChatId
+        ? ["this chat"]
+        : ["the group chat ", chatName]),
       Str.PERIOD,
     ].join(Str.EMPTY);
   }
@@ -122,6 +124,14 @@ function selectChat() {
   });
   chatNotificationsStore.remove(props.notification.id);
 }
+
+const chatId = computed(() =>
+  props.notification[DISCRIMINATOR] === ChatNotificationType.NEW_CHAT
+    ? props.notification.payload.id
+    : props.notification[DISCRIMINATOR] === ChatNotificationType.NEW_CHAT_MEMBER
+      ? props.notification.payload.chat.id
+      : props.notification.payload.chatId,
+);
 </script>
 
 <template>
@@ -135,7 +145,10 @@ function selectChat() {
     <CardContent>
       {{ content }}
     </CardContent>
-    <CardFooter class="card-footer">
+    <CardFooter
+      v-if="chatId !== notification.selectedChatId"
+      class="card-footer"
+    >
       <BaseButton @click="selectChat">Go to chat</BaseButton>
     </CardFooter>
   </Card>

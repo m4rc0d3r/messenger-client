@@ -13,6 +13,7 @@ export type ChatNotificationType = z.infer<typeof zChatNotificationType>;
 
 export const zBaseChatNotification = z.object({
   id: z.number(),
+  selectedChatId: zChat.shape.id.optional(),
 });
 
 export const DISCRIMINATOR = "type";

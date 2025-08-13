@@ -164,10 +164,11 @@ webSocketConnection.addEventListener("SendMessage", (e) => {
   addMessageToChat(message.chatId, message);
   if (message.senderId !== authStore.currentUser.value?.id) {
     (document.getElementById("new-message-sound") as HTMLAudioElement).play();
-    if (chatStore.chats.value[selectedChatIndex.value].id !== message.chatId) {
+    if (chatStore.chats.value[selectedChatIndex.value]?.id !== message.chatId) {
       chatNotificationsStore.add({
         type: ChatNotificationType.NEW_MESSAGE,
         payload: message,
+        selectedChatId: chatStore.chats.value[selectedChatIndex.value]?.id,
       });
     }
   }
@@ -181,6 +182,7 @@ webSocketConnection.addEventListener("CreateChat", async (e) => {
     chatNotificationsStore.add({
       type: ChatNotificationType.NEW_CHAT,
       payload: chat,
+      selectedChatId: chatStore.chats.value[selectedChatIndex.value]?.id,
     });
   }
 });
@@ -206,6 +208,7 @@ webSocketConnection.addEventListener("AddUserToChat", async (e) => {
       user: addedUser,
       chat: { id: chatId },
     },
+    selectedChatId: chatStore.chats.value[selectedChatIndex.value]?.id,
   });
 });
 
