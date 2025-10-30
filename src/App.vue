@@ -90,10 +90,35 @@
       zConfig.innerType().shape.serverApp.innerType().shape
         .VITE_SERVER_DEPLOYMENT_PLATFORM.Enum.RENDER
     "
-    class="request-is-taking-too-long"
+    :class="[
+      'request-is-taking-too-long',
+      !isReqTakingTooLongMsgRead && 'request-is-taking-too-long-unread',
+    ]"
   >
-    <Info class="request-is-taking-too-long-icon" />
-    <div class="request-is-taking-too-long-explanation">
+    <button
+      type="button"
+      :class="[
+        'request-is-taking-too-long-info-button',
+        !isReqTakingTooLongMsgRead && 'animate-resize',
+      ]"
+      @click="isReqTakingTooLongMsgVisible = !isReqTakingTooLongMsgVisible"
+    >
+      <Info
+        :class="[
+          'request-is-taking-too-long-icon',
+          isReqTakingTooLongMsgRead
+            ? 'request-is-taking-too-long-icon-read'
+            : 'animate-pulse',
+        ]"
+      />
+    </button>
+    <div
+      :class="[
+        'request-is-taking-too-long-explanation',
+        isReqTakingTooLongMsgVisible &&
+          'request-is-taking-too-long-explanation-visible',
+      ]"
+    >
       <p>
         If any operation (e.g. registration, creating a chat, sending a message)
         does not give a response for a long time (more than 5 seconds), it may
@@ -117,6 +142,16 @@
         If the backend is inactive, wait for it to start and repeat the
         operation again.
       </p>
+      <BaseButton
+        class="request-is-taking-too-long-ok-button"
+        @click="
+          () => {
+            isReqTakingTooLongMsgVisible = false;
+            isReqTakingTooLongMsgRead = true;
+          }
+        "
+        >OK</BaseButton
+      >
     </div>
   </div>
 </template>
@@ -129,9 +164,11 @@ import SimpleNotification from "@/components/SimpleNotification.vue";
 import { webSocketConnection } from "@/http/websocket";
 import { useAuthStore } from "@/stores/auth-store";
 import { useNotificationStore } from "@/stores/notification-store";
+import { useStorage } from "@vueuse/core";
 import { Info, User } from "lucide-vue-next";
 import { ref, watchEffect } from "vue";
 import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
+import BaseButton from "./components/BaseButton.vue";
 import GroupChatCreation from "./components/GroupChatCreation.vue";
 import { useConfigStore, zConfig } from "./config";
 import { ChatType } from "./schemas/chat";
@@ -182,6 +219,13 @@ watchEffect(() => {
     logout();
   }
 });
+
+const isReqTakingTooLongMsgRead = useStorage(
+  "isLongBackendResponseNotificationRead",
+  false,
+);
+
+const isReqTakingTooLongMsgVisible = ref(false);
 </script>
 
 <style scoped>
@@ -259,17 +303,34 @@ watchEffect(() => {
   display: flex;
   align-items: end;
   gap: calc(var(--step) * 4);
-  padding: calc(var(--step) * 4);
+  padding: calc(var(--step) * 2);
+  transition: all 0.5s;
+}
+
+.request-is-taking-too-long-unread {
+  padding: calc(var(--step) * 6);
+}
+
+.request-is-taking-too-long-info-button {
+  background-color: transparent;
+  border: none;
+  border-radius: 100%;
+  aspect-ratio: 1;
+}
+
+.request-is-taking-too-long-info-button:hover {
+  background-color: lightblue;
 }
 
 .request-is-taking-too-long-icon {
   width: 2rem;
   height: 2rem;
   flex-shrink: 0;
+  stroke: red;
 }
 
-.request-is-taking-too-long:hover > :nth-child(2) {
-  display: block;
+.request-is-taking-too-long-icon-read {
+  stroke: black;
 }
 
 .request-is-taking-too-long-explanation {
@@ -280,8 +341,37 @@ watchEffect(() => {
   padding: 0.5rem;
 }
 
+.request-is-taking-too-long-explanation-visible {
+  display: flex;
+  flex-direction: column;
+}
+
 .request-is-taking-too-long-list {
   list-style-type: circle;
   list-style-position: inside;
+}
+
+.request-is-taking-too-long-ok-button {
+  align-self: flex-end;
+}
+
+@keyframes resize {
+  50% {
+    scale: 2;
+  }
+}
+
+.animate-resize {
+  animation: resize 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 </style>
